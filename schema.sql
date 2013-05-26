@@ -10,7 +10,7 @@ CREATE TABLE activities (
 		datetime,
 		person(198),
 		service(198),
-		TYPE (198),
+		type (198),
 		content(198),
 		url(198)
 	)
