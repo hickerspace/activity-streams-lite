@@ -1,12 +1,11 @@
 CREATE TABLE activities (
-  pk_id SERIAL,
+	pk_id SERIAL PRIMARY KEY,
 	datetime DATETIME NOT NULL,
 	person TEXT,
 	service TEXT NOT NULL,
 	type TEXT NOT NULL,
 	content TEXT,
 	url TEXT,
-	PRIMARY KEY (pk_id),
 	UNIQUE (
 		datetime,
 		person(198),
