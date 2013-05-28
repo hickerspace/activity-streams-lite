@@ -10,11 +10,17 @@ class FeedHandler(base.BaseHandler):
 	def __init__(self, dbConnection):
 		super(FeedHandler, self).__init__(dbConnection)
 
+	def parse(self, url):
+		feed = feedparser.parse(url)
+		if feed["bozo"]: print "Feed Error: %s" % feed["bozo_exception"]
+		return feed
+
+
 	def github(self):
 		private = ["https://github.com/organizations/hickerspace/basti2342.private.atom?token=PASTE_TOKEN_HERE"]
 
 		for url in private:
-			feed = feedparser.parse(url)
+			feed = self.parse(url)
 			for entry in feed["entries"]:
 				type = "Activity"
 				# try to get the specific event from the id
@@ -29,7 +35,7 @@ class FeedHandler(base.BaseHandler):
 		urls = ["http://www.facebook.com/feeds/page.php?format=atom10&id=148681465224497"]
 
 		for url in urls:
-			feed = feedparser.parse(url)
+			feed = self.parse(url)
 			for entry in feed["entries"]:
 				# strip html
 				cleanContent = re.sub('<[^<]+?>', '', entry["content"][0]["value"])
@@ -40,7 +46,7 @@ class FeedHandler(base.BaseHandler):
 		service = "YouTube"
 		for url in urls:
 			# get videos
-			feed = feedparser.parse(url)
+			feed = self.parse(url)
 			for entry in feed["entries"]:
 				self.insert(entry["updated_parsed"], service, "Video", entry["link"], entry["title"])
 
@@ -50,7 +56,7 @@ class FeedHandler(base.BaseHandler):
 				title = entry["title"]
 				link = "http://www.youtube.com/all_comments?v=%s" % id
 
-				commentFeed = feedparser.parse("https://gdata.youtube.com/feeds/api/videos/%s/comments" % id)
+				commentFeed = self.parse("https://gdata.youtube.com/feeds/api/videos/%s/comments" % id)
 				for commentEntry in commentFeed["entries"]:
 					content = 'Kommentar zu "%s": %s' % (title, commentEntry["subtitle"]
 						.encode("latin-1", "ignore"))
@@ -60,7 +66,7 @@ class FeedHandler(base.BaseHandler):
 		urls = ["http://hickerspace.org/w/index.php?title=Spezial:Letzte_%C3%84nderungen&feed=atom"]
 
 		for url in urls:
-			feed = feedparser.parse(url)
+			feed = self.parse(url)
 			for entry in feed["entries"]:
 				# try to parse edit summary
 				summaryMatch = re.findall(r"^<p>(.+?)</p>", entry["summary"])
