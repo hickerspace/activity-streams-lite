@@ -21,6 +21,7 @@ def main():
 	feed.github()
 	feed.facebook()
 	feed.youtube()
+	feed.wiki()
 
 	# Hickerspace-API
 	api = ApiHandler(sqlConnection)

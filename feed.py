@@ -11,22 +11,19 @@ class FeedHandler(base.BaseHandler):
 		super(FeedHandler, self).__init__(dbConnection)
 
 	def github(self):
-		# new repos have to be inserted manually
-		urls = ["https://github.com/hickerspace/ledticker/commits/master.atom",
-				"https://github.com/hickerspace/Bahnanzeige/commits/master.atom",
-				"https://github.com/hickerspace/REST-API/commits/master.atom",
-				"https://github.com/hickerspace/Mensabot/commits/master.atom",
-				"https://github.com/hickerspace/Mate-O-Meter/commits/master.atom",
-				"https://github.com/hickerspace/Community-Twitter/commits/master.atom",
-				"https://github.com/hickerspace/microprinting/commits/master.atom",
-				"https://github.com/hickerspace/Ampelschaltung/commits/master.atom",
-				"https://github.com/hickerspace/API-Examples/commits/master.atom"]
+		private = ["https://github.com/organizations/hickerspace/basti2342.private.atom?token=PASTE_TOKEN_HERE"]
 
-		for url in urls:
+		for url in private:
 			feed = feedparser.parse(url)
 			for entry in feed["entries"]:
-				self.insert(entry["updated_parsed"], "GitHub", "Commit", entry["link"], \
-					"%s: %s" % (feed["feed"]["title"], entry["title"]), entry["author"])
+				type = "Activity"
+				# try to get the specific event from the id
+				typeMatch = re.findall(r"^tag:github.com,2008:(.*?)Event/\d+$", entry["id"])
+				if typeMatch:
+					type = typeMatch[0]
+
+				self.insert(entry["updated_parsed"], "GitHub", type, entry["link"], \
+					entry["title"], entry["author"])
 
 	def facebook(self):
 		urls = ["http://www.facebook.com/feeds/page.php?format=atom10&id=148681465224497"]
@@ -58,4 +55,19 @@ class FeedHandler(base.BaseHandler):
 					content = 'Kommentar zu "%s": %s' % (title, commentEntry["subtitle"]
 						.encode("latin-1", "ignore"))
 					self.insert(entry["updated_parsed"], service, "Kommentar", link, content)
+
+	def wiki(self):
+		urls = ["http://hickerspace.org/w/index.php?title=Spezial:Letzte_%C3%84nderungen&feed=atom"]
+
+		for url in urls:
+			feed = feedparser.parse(url)
+			for entry in feed["entries"]:
+				# try to parse edit summary
+				summaryMatch = re.findall(r"^<p>(.+?)</p>", entry["summary"])
+				# strip html
+				summary = ": %s" % re.sub('<[^<]+?>', '', summaryMatch[0]) if summaryMatch else ""
+				content = "%s%s" % (entry["title"], summary)
+
+				self.insert(entry["updated_parsed"], "Wiki", "Activity", entry["link"], \
+					content.encode("latin-1", "ignore"), entry["author"])
 
