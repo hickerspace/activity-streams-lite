@@ -20,8 +20,8 @@ class FeedHandler(base.BaseHandler):
 	def stripHtml(self, htmlContent):
 		return re.sub('<[^<]+?>', '', htmlContent)
 
-	def github(self):
-		private = ["https://github.com/organizations/hickerspace/basti2342.private.atom?token=PASTE_TOKEN_HERE"]
+	def github(self, token):
+		private = ["https://github.com/organizations/hickerspace/basti2342.private.atom?token=%s" % token]
 
 		for url in private:
 			feed = self.parse(url)
@@ -79,9 +79,9 @@ class FeedHandler(base.BaseHandler):
 				self.insert(entry["updated_parsed"], "Wiki", "Activity", entry["link"], \
 					content.encode("latin-1", "ignore"), entry["author"])
 
-	def soup(self):
+	def soup(self, token):
 		accountRss = "http://hickerspace.soup.io/rss"
-		notifyRss = "http://www.soup.io/notifications/PASTE_TOKEN_HERE.rss"
+		notifyRss = "http://www.soup.io/notifications/%s.rss" % token
 		service = "Soup"
 
 		feedAcc = self.parse(accountRss)
