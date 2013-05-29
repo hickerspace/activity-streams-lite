@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import base, feedparser, re
+import base, feedparser, re, json
 
 """
 FeedHandler parses feeds and inserts particular parts into the database.
@@ -12,9 +12,13 @@ class FeedHandler(base.BaseHandler):
 
 	def parse(self, url):
 		feed = feedparser.parse(url)
-		if feed["bozo"]: print "Feed Error: %s" % feed["bozo_exception"]
+		if feed["bozo"]:
+			level = "Warning" if feed["entries"] else "Error"
+			print "Feed %s: %s (%s)" % (level, feed["bozo_exception"], url)
 		return feed
 
+	def stripHtml(self, htmlContent):
+		return re.sub('<[^<]+?>', '', htmlContent)
 
 	def github(self):
 		private = ["https://github.com/organizations/hickerspace/basti2342.private.atom?token=PASTE_TOKEN_HERE"]
@@ -37,8 +41,7 @@ class FeedHandler(base.BaseHandler):
 		for url in urls:
 			feed = self.parse(url)
 			for entry in feed["entries"]:
-				# strip html
-				cleanContent = re.sub('<[^<]+?>', '', entry["content"][0]["value"])
+				cleanContent = self.stripHtml(entry["content"][0]["value"])
 				self.insert(entry["updated_parsed"], "Facebook", "Pinnwand", entry["link"], cleanContent)
 
 	def youtube(self):
@@ -70,10 +73,27 @@ class FeedHandler(base.BaseHandler):
 			for entry in feed["entries"]:
 				# try to parse edit summary
 				summaryMatch = re.findall(r"^<p>(.+?)</p>", entry["summary"])
-				# strip html
-				summary = ": %s" % re.sub('<[^<]+?>', '', summaryMatch[0]) if summaryMatch else ""
+				summary = ": %s" % self.stripHtml(summaryMatch[0]) if summaryMatch else ""
 				content = "%s%s" % (entry["title"], summary)
 
 				self.insert(entry["updated_parsed"], "Wiki", "Activity", entry["link"], \
 					content.encode("latin-1", "ignore"), entry["author"])
+
+	def soup(self):
+		accountRss = "http://hickerspace.soup.io/rss"
+		notifyRss = "http://www.soup.io/notifications/PASTE_TOKEN_HERE.rss"
+		service = "Soup"
+
+		feedAcc = self.parse(accountRss)
+		for entry in feedAcc["entries"]:
+			attributes = json.loads(entry["soup_attributes"])
+			body = self.stripHtml(attributes["body"])
+			link = entry["links"][-1]["href"]
+			self.insert(entry["updated_parsed"], service, "Post", link, body.encode("latin-1", "ignore"))
+
+		feedNotify = self.parse(notifyRss)
+		for entry in feedNotify["entries"]:
+			authorMatches = re.findall(r"<span class=\"name\">(.+?)</span>", entry["summary"])
+			author = authorMatches[0] if authorMatches else ""
+			self.insert(entry["updated_parsed"], service, "Notification", entry["link"], entry["title"].encode("latin-1", "ignore"), author)
 

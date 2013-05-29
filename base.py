@@ -4,6 +4,7 @@
 from MySQLdb import IntegrityError
 from time import mktime, struct_time
 from datetime import datetime
+import re
 
 """
 This class provides a basic handler. It should be extended by feed-/API-methods.
@@ -14,12 +15,16 @@ class BaseHandler(object):
 		self.cursor = dbConnection.cursor()
 
 	def insert(self, date, service, type, url="", content="", person=""):
+		# convert date to SQL DATETIME
 		if isinstance(date, struct_time):
 			date = datetime.fromtimestamp(mktime(date))
 		if isinstance(date, datetime):
 			date = date.strftime("%Y-%m-%d %H:%M:%S")
 		else:
 			raise TypeError("Unknown date format.")
+
+		# remove multiple spaces
+		content = re.sub('\s{2,}', ' ', content)
 
 		try:
 			self.cursor.execute("INSERT INTO activities (datetime, person, service, type, " \
