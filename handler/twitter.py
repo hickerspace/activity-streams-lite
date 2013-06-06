@@ -14,6 +14,7 @@ class TwitterHandler(base.BaseHandler):
 		self.api = tweepy.API(auth)
 
 		self.service = "Twitter"
+		# cache expanded urls in file
 		self.expandedUrls = join(dirname(abspath(__file__)), \
 			"..%(sep)sdata%(sep)sexpanded_urls.json" % {"sep": sep})
 

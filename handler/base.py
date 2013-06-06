@@ -13,6 +13,7 @@ The database connection must be established before.
 class BaseHandler(object):
 	def __init__(self, dbConnection):
 		self.cursor = dbConnection.cursor()
+		self.queryCount = 0
 
 	def insert(self, date, service, type, url="", content="", person=""):
 		# convert date to SQL DATETIME
@@ -30,6 +31,7 @@ class BaseHandler(object):
 			self.cursor.execute("INSERT INTO activities (datetime, person, service, type, " \
 				+ "content, url) VALUES (%s, %s, %s, %s, %s, %s)", (date, person, service, \
 				type, content, url))
+			self.queryCount += 1
 		except IntegrityError as e:
 			# duplicate entry
 			if e.args[0] == 1062:
@@ -38,3 +40,5 @@ class BaseHandler(object):
 				print "Last SQL statement: %s" % self.cursor._last_executed
 				raise e
 
+	def status(self):
+		return "%s: %d new record(s)." % (self.__class__.__name__, self.queryCount)

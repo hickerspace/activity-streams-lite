@@ -31,7 +31,7 @@ class ApiHandler(base.BaseHandler):
 		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
 
 		if status["bottles"] > 1:
-			content = "Es sind noch %d Flaschen in unserer Kiste."
+			content = "Es sind noch %d Flaschen in unserer Kiste." % status["bottles"]
 		elif status["bottles"] == 1:
 			content = "Es ist nur noch 1 Flasche in unserer Kiste."
 		else:

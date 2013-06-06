@@ -21,7 +21,8 @@ class FeedHandler(base.BaseHandler):
 		return re.sub('<[^<]+?>', '', htmlContent)
 
 	def github(self, token):
-		private = ["https://github.com/organizations/hickerspace/basti2342.private.atom?token=%s" % token]
+		private = ["https://github.com/organizations/hickerspace/basti2342.private.atom?token=%s" \
+			% token]
 
 		for url in private:
 			feed = self.parse(url)
@@ -42,16 +43,19 @@ class FeedHandler(base.BaseHandler):
 			feed = self.parse(url)
 			for entry in feed["entries"]:
 				cleanContent = self.stripHtml(entry["content"][0]["value"])
-				self.insert(entry["updated_parsed"], "Facebook", "Pinnwand", entry["link"], cleanContent)
+				self.insert(entry["updated_parsed"], "Facebook", "Pinnwand", \
+					entry["link"], cleanContent)
 
 	def youtube(self):
-		urls = ["http://gdata.youtube.com/feeds/base/users/hickerspace/uploads?alt=rss&v=2&orderby=published"]
+		urls = ["http://gdata.youtube.com/feeds/base/users/hickerspace/uploads" \
+			+ "?alt=rss&v=2&orderby=published"]
 		service = "YouTube"
 		for url in urls:
 			# get videos
 			feed = self.parse(url)
 			for entry in feed["entries"]:
-				self.insert(entry["updated_parsed"], service, "Video", entry["link"], entry["title"])
+				self.insert(entry["updated_parsed"], service, "Video", \
+					entry["link"], entry["title"])
 
 			# get comments
 			for entry in feed["entries"]:
@@ -59,14 +63,16 @@ class FeedHandler(base.BaseHandler):
 				title = entry["title"]
 				link = "http://www.youtube.com/all_comments?v=%s" % id
 
-				commentFeed = self.parse("https://gdata.youtube.com/feeds/api/videos/%s/comments" % id)
+				commentFeed = self.parse("https://gdata.youtube.com/feeds/api/videos/%s/comments" \
+					% id)
 				for commentEntry in commentFeed["entries"]:
-					content = 'Kommentar zu "%s": %s' % (title, commentEntry["subtitle"]
+					content = 'Kommentar zu "%s": %s' % (title, commentEntry["subtitle"] \
 						.encode("latin-1", "ignore"))
 					self.insert(entry["updated_parsed"], service, "Kommentar", link, content)
 
 	def wiki(self):
-		urls = ["http://hickerspace.org/w/index.php?title=Spezial:Letzte_%C3%84nderungen&feed=atom"]
+		urls = ["http://hickerspace.org/w/index.php" \
+			+ "?title=Spezial:Letzte_%C3%84nderungen&feed=atom"]
 
 		for url in urls:
 			feed = self.parse(url)
@@ -89,11 +95,13 @@ class FeedHandler(base.BaseHandler):
 			attributes = json.loads(entry["soup_attributes"])
 			body = self.stripHtml(attributes["body"])
 			link = entry["links"][-1]["href"]
-			self.insert(entry["updated_parsed"], service, "Post", link, body.encode("latin-1", "ignore"))
+			self.insert(entry["updated_parsed"], service, "Post", link, \
+				body.encode("latin-1", "ignore"))
 
 		feedNotify = self.parse(notifyRss)
 		for entry in feedNotify["entries"]:
 			authorMatches = re.findall(r"<span class=\"name\">(.+?)</span>", entry["summary"])
 			author = authorMatches[0] if authorMatches else ""
-			self.insert(entry["updated_parsed"], service, "Notification", entry["link"], entry["title"].encode("latin-1", "ignore"), author)
+			self.insert(entry["updated_parsed"], service, "Notification", entry["link"], \
+				entry["title"].encode("latin-1", "ignore"), author)
 
