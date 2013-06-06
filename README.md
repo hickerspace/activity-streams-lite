@@ -11,7 +11,6 @@ See our nice [chart](http://hickerspace.org/wiki/Datei:Activitystreams.jpg).
 
 ## Input
 ### To be done
-* Mailinglists
 * Web form
 * Sound/LEDTicker (?)
 
@@ -26,6 +25,7 @@ See our nice [chart](http://hickerspace.org/wiki/Datei:Activitystreams.jpg).
   * Raumstatus
   * Matewaage
 * Twitter (timeline + mentions via Twitter-API)
+* Mailinglists
 
 ## Output
 Nothing done yet.
