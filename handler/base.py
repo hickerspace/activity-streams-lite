@@ -4,6 +4,7 @@
 from MySQLdb import IntegrityError
 from time import mktime, struct_time
 from datetime import datetime
+from calendar import timegm
 import re
 
 """
@@ -18,7 +19,7 @@ class BaseHandler(object):
 	def insert(self, date, service, type, url="", content="", person=""):
 		# convert date to SQL DATETIME
 		if isinstance(date, struct_time):
-			date = datetime.fromtimestamp(mktime(date))
+			date = self.utcStruct2localDatetime(date)
 		if isinstance(date, datetime):
 			date = date.strftime("%Y-%m-%d %H:%M:%S")
 		else:
@@ -39,6 +40,9 @@ class BaseHandler(object):
 			else:
 				print "Last SQL statement: %s" % self.cursor._last_executed
 				raise e
+
+	def utcStruct2localDatetime(self, timeTuple):
+		return datetime.fromtimestamp(timegm(timeTuple))
 
 	def status(self):
 		return "%s: %d new record(s)." % (self.__class__.__name__, self.queryCount)

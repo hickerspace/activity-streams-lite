@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import base, urllib, urllib2
+import base, urllib, urllib2, locale
 from lxml import etree
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -20,8 +20,11 @@ class MailinglistHandler(base.BaseHandler):
 		dates = [datetime.now(), datetime.now() - relativedelta(months=1)]
 		for date in dates:
 			# request archive index for specific month
+			locale.setlocale(locale.LC_TIME, 'C')
 			privateUrl = "%sprivate/%s/%d-%s/" % (mailmanUrl, listName, date.year, \
 				date.strftime("%B"))
+			locale.setlocale(locale.LC_TIME, '')
+
 			idxUrl = "%sdate.html" % privateUrl
 			request = urllib2.Request(idxUrl, auth)
 			archiveIdx = urllib2.urlopen(request).read().decode('utf-8')
@@ -33,6 +36,9 @@ class MailinglistHandler(base.BaseHandler):
 				break
 
 			mailLinks = idxTree.xpath('/html/body/ul[2]/li/a/@href')
+			if not mailLinks:
+				print "No links found for %s" % idxUrl
+				print idxTree
 
 			for mailLink in mailLinks:
 				# fetch mail
@@ -44,8 +50,13 @@ class MailinglistHandler(base.BaseHandler):
 
 				if mailDate:
 					# convert string to datetime
+					locale.setlocale(locale.LC_TIME, 'C')
 					mailDate = datetime.strptime(mailDate[0], "%a %b  %d %H:%M:%S %Z %Y")
+					locale.setlocale(locale.LC_TIME, '')
 
 					self.insert(mailDate, "Mailingliste", listName.title(), mailUrl, \
 						"Neue Mail auf der %s-Mailingliste." % listName.title())
+				else:
+					print "No date found in mail:"
+					print mailTree
 

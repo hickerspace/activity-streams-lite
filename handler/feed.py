@@ -32,7 +32,6 @@ class FeedHandler(base.BaseHandler):
 				typeMatch = re.findall(r"^tag:github.com,2008:(.*?)Event/\d+$", entry["id"])
 				if typeMatch:
 					type = typeMatch[0]
-
 				self.insert(entry["updated_parsed"], "GitHub", type, entry["link"], \
 					entry["title"], entry["author"])
 

@@ -4,6 +4,7 @@
 import base, tweepy, re, httplib2, json
 from os import sep, access, W_OK
 from os.path import dirname, abspath, join
+from dateutil import tz
 
 class TwitterHandler(base.BaseHandler):
 	def __init__(self, dbConnection, consumerKey, consumerSecret, accessToken, accessTokenSecret):
@@ -67,7 +68,11 @@ class TwitterHandler(base.BaseHandler):
 		content = self.expand(status.text).encode("latin-1", "ignore")
 		person = author if type == "Mention" else status.source
 
-		self.insert(status.created_at, self.service, type, url, content, person)
+		# convert UTC datetime to local datetime
+		date = status.created_at.replace(tzinfo=tz.tzutc())
+		localDate = date.astimezone(tz.tzlocal())
+
+		self.insert(localDate, self.service, type, url, content, person)
 
 	def timeline(self, screenName):
 		for status in self.api.user_timeline(screenName):

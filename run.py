@@ -37,7 +37,7 @@ def main():
 	twit.mentions(twitterAccNames)
 	print twit.status()
 
-	# Mailinglists
+	# Mailinglist
 	mail = MailinglistHandler(sqlCon)
 	for mailmanList in mailmanLists:
 		mail.posts(mailmanUrl, mailmanList, mailAddress, mailPassword)
