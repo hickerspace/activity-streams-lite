@@ -8,7 +8,7 @@ from handler.api import ApiHandler
 from handler.twitter import TwitterHandler
 from handler.mailinglist import MailinglistHandler
 
-config = SafeConfigParser.ConfigParser()
+config = ConfigParser.SafeConfigParser()
 config.read("config")
 
 twitterAccNames = config.get("twitter", "accountNames").split(",")
