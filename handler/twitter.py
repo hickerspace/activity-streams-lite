@@ -14,7 +14,7 @@ class TwitterHandler(base.BaseHandler):
 		auth.set_access_token(accessToken, accessTokenSecret)
 		self.api = tweepy.API(auth)
 
-		self.service = "Twitter"
+		self.service = "twitter"
 		# cache expanded urls in file
 		self.expandedUrls = join(dirname(abspath(__file__)), \
 			"..%(sep)sdata%(sep)sexpanded_urls.json" % {"sep": sep})
@@ -57,7 +57,7 @@ class TwitterHandler(base.BaseHandler):
 
 	def insertStatus(self, status, type=None):
 		if not type:
-			type = "Reply" if status.text[0] == "@" else "Tweet"
+			type = "reply" if status.text[0] == "@" else "tweet"
 
 		try:
 			author = status.author.screen_name
@@ -66,12 +66,12 @@ class TwitterHandler(base.BaseHandler):
 
 		url = "http://twitter.com/%s/statuses/%s" % (author, status.id_str)
 		content = self.expand(status.text).encode("latin-1", "ignore")
-		person = author if type == "Mention" else status.source
+		person = author if type == "mention" else status.source
 
 		# convert UTC datetime to local datetime
 		date = status.created_at.replace(tzinfo=tz.tzutc())
 		localDate = date.astimezone(tz.tzlocal())
-
+		if person == "web": person == ""
 		self.insert(localDate, self.service, type, url, content, person)
 
 	def timeline(self, screenName):
@@ -89,5 +89,5 @@ class TwitterHandler(base.BaseHandler):
 		query = "%s %s" % (" OR ".join(withQuery), " ".join(withoutQuery))
 		results = tweepy.Cursor(self.api.search, q=query).items()
 		for status in results:
-			self.insertStatus(status, "Mention")
+			self.insertStatus(status, "mention")
 

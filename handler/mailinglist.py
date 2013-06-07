@@ -36,9 +36,6 @@ class MailinglistHandler(base.BaseHandler):
 				break
 
 			mailLinks = idxTree.xpath('/html/body/ul[2]/li/a/@href')
-			if not mailLinks:
-				print "No links found for %s" % idxUrl
-				print idxTree
 
 			for mailLink in mailLinks:
 				# fetch mail
@@ -54,9 +51,6 @@ class MailinglistHandler(base.BaseHandler):
 					mailDate = datetime.strptime(mailDate[0], "%a %b  %d %H:%M:%S %Z %Y")
 					locale.setlocale(locale.LC_TIME, '')
 
-					self.insert(mailDate, "Mailingliste", listName.title(), mailUrl, \
-						"Neue Mail auf der %s-Mailingliste." % listName.title())
-				else:
-					print "No date found in mail:"
-					print mailTree
+					self.insert(mailDate, "mailing list", listName.title(), mailUrl, \
+						"New mail on %s mailing list." % listName.title())
 

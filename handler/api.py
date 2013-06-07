@@ -21,9 +21,8 @@ class ApiHandler(base.BaseHandler):
 	def room(self):
 		status = self.apiCall("room")
 		since = datetime.fromtimestamp(long(status["since"]))
-		statusStr = "offen" if status["roomStatus"] == "open" else "geschlossen"
-		content = "Unser Raum ist %s." % statusStr
-		self.insert(since, "Sensorik", "Raumstatus", \
+		content = "Our room is %s." % status["roomStatus"]
+		self.insert(since, "sensor", "room", \
 			"https://hickerspace.org/wiki/Raumstatus", content)
 
 	def matewaage(self):
@@ -31,12 +30,12 @@ class ApiHandler(base.BaseHandler):
 		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
 
 		if status["bottles"] > 1:
-			content = "Es sind noch %d Flaschen in unserer Kiste." % status["bottles"]
+			content = "%d bottles left." % status["bottles"]
 		elif status["bottles"] == 1:
-			content = "Es ist nur noch 1 Flasche in unserer Kiste."
+			content = "Only 1 bottle left."
 		else:
-			content = "Es sind keine Flaschen mehr in unserer Kiste."
+			content = "No bottles left."
 
-		self.insert(updated, "Sensorik", "Matewaage", \
+		self.insert(updated, "sensor", "mate-o-meter", \
 			"https://hickerspace.org/Mate-O-Meter", content)
 
