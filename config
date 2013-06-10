@@ -19,15 +19,15 @@ accessTokenSecret:
 
 
 # github.com data
+[github]
 # Switch to organization context, click on "News Feed" and copy the token:
 # https://github.com/organizations/hickerspace/basti2342.private.atom?token=THIS_IS_THE_TOKEN
-[github]
 token: 
 
 # soup.io data
+[soup]
 # Go to http://www.soup.io/notifications, click on "RSS-Feed" an copy the token:
 # http://www.soup.io/notifications/THIS_IS_THE_TOKEN.rss
-[soup]
 token: 
 
 # mailman data
