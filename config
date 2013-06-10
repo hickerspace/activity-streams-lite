@@ -13,60 +13,51 @@ twittimeline: * * * * * * */10 0
 twitmentions: * * * * * * */5 0
 mailinglist: * * * * * * */5 0
 
-# database data
 [database]
 host: 
 databaseName: 
 username: 
 password: 
 
-
-# twitter data (create an app on dev.twitter.com)
 [twitter]
+# (create an app on http://dev.twitter.com/)
 accountNames:  ; use comma seperation for several items
 consumerKey: 
 consumerSecret: 
 accessToken: 
 accessTokenSecret: 
 
-
-# github data
+[github]
 # Provide name of your organziation, a user who is member of it and the user token.
 # Switch to organization context, click on "News Feed" and copy the token:
 # https://github.com/organizations/hickerspace/basti2342.private.atom?token=THIS_IS_THE_TOKEN
-[github]
 organization: 
 user: 
 token: 
 
-# facebook data
+[facebook]
 # Get link of logo and copy the ID:
 # http://www.facebook.com/photo.php?fbid=148687508557226&set=a.148684541890856.33197.THIS_IS_THE_ID&type=1&source=11
-[facebook]
 id: 
 
-# youtube data
-# Provide your account name
 [youtube]
+# Provide your account name
 user: 
 
-# mediawiki data
-# Provide the Recent Changes atom feed.
 [mediawiki]
+# Provide the Recent Changes atom feed.
 feedurl: 
 
-# soup.io data
+[soup]
 # Go to http://www.soup.io/notifications, click on "RSS-Feed" an copy the token:
 # http://www.soup.io/notifications/THIS_IS_THE_TOKEN.rss
-[soup]
 user: 
 token: 
 
-# mailman data
+[mailman]
 # Provide list names and url to webinterface (without list names etc)
 # In case of protected archives enter credentials of a subscribed user (must be subscribed on all lists)
 # (E.g. create a new user and disable mail delivery)
-[mailman]
 lists:  ; use comma seperation for several items
 weburl: 
 loginMailAddress: 
