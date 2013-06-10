@@ -7,14 +7,12 @@ databaseName:
 username: 
 password: 
 
-
 [twitter]
 accountNames:  ; use comma seperation for several items
 consumerKey: 
 consumerSecret: 
 accessToken: 
 accessTokenSecret: 
-
 
 [github]
 # Switch to organization context, click on "News Feed" and copy the token:
