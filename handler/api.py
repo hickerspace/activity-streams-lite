@@ -39,3 +39,14 @@ class ApiHandler(base.BaseHandler):
 		self.insert(updated, "sensor", "mate-o-meter", \
 			"https://hickerspace.org/Mate-O-Meter", content)
 
+	def trafficLight(self):
+		status = self.apiCall("ampel")
+		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
+		colors = ["red", "yellow", "green"]
+		lightStatus = { True: "on", False: "off" }
+		lights = [ "%s: %s" % (color, lightStatus[status[color]]) for color in colors ]
+		extendedInfo = "" if status["mode"] == "random" else " (%s)" % ", ".join(lights)
+		content = 'Traffic light mode switched to "%s"%s.' % (status["mode"], extendedInfo)
+		self.insert(updated, "sensor", "traffic light", \
+			"https://hickerspace.org/wiki/Verkehrsampel", content)
+

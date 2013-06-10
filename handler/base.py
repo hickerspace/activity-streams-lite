@@ -14,7 +14,8 @@ The database connection must be established before.
 class BaseHandler(object):
 	def __init__(self, dbConnection):
 		self.cursor = dbConnection.cursor()
-		self.queryCount = 0
+		self.newRecords = 0
+		self.duplicateQueries = 0
 
 	def insert(self, date, service, type, url="", content="", person=""):
 		# convert date to SQL DATETIME
@@ -32,11 +33,12 @@ class BaseHandler(object):
 			self.cursor.execute("INSERT INTO activities (datetime, person, service, type, " \
 				+ "content, url) VALUES (%s, %s, %s, %s, %s, %s)", (date, person, service, \
 				type, content, url))
-			self.queryCount += 1
+			self.newRecords += 1
 		except IntegrityError as e:
 			# duplicate entry
 			if e.args[0] == 1062:
-				print e.args[1]
+				self.duplicateQueries += 1
+				#print e.args[1]
 			else:
 				print "Last SQL statement: %s" % self.cursor._last_executed
 				raise e
@@ -44,5 +46,8 @@ class BaseHandler(object):
 	def utcStruct2localDatetime(self, timeTuple):
 		return datetime.fromtimestamp(timegm(timeTuple))
 
+	def close(self):
+		self.cursor.close()
+
 	def status(self):
-		return "%s: %d new record(s)." % (self.__class__.__name__, self.queryCount)
+		return "%d new record(s); %d duplicate(s)" % (self.newRecords, self.duplicateQueries)

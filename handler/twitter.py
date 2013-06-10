@@ -7,17 +7,19 @@ from os.path import dirname, abspath, join
 from dateutil import tz
 
 class TwitterHandler(base.BaseHandler):
-	def __init__(self, dbConnection, consumerKey, consumerSecret, accessToken, accessTokenSecret):
+	def __init__(self, dbConnection):
 		super(TwitterHandler, self).__init__(dbConnection)
-		# create Twitter connection
-		auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
-		auth.set_access_token(accessToken, accessTokenSecret)
-		self.api = tweepy.API(auth)
 
 		self.service = "twitter"
 		# cache expanded urls in file
 		self.expandedUrls = join(dirname(abspath(__file__)), \
 			"..%(sep)sdata%(sep)sexpanded_urls.json" % {"sep": sep})
+
+	def auth(self, consumerKey, consumerSecret, accessToken, accessTokenSecret):
+		# create Twitter connection
+		auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
+		auth.set_access_token(accessToken, accessTokenSecret)
+		self.api = tweepy.API(auth)
 
 	def resolve(self, url, expanded):
 		h = httplib2.Http()
@@ -66,12 +68,14 @@ class TwitterHandler(base.BaseHandler):
 
 		url = "http://twitter.com/%s/statuses/%s" % (author, status.id_str)
 		content = self.expand(status.text).encode("latin-1", "ignore")
-		person = author if type == "mention" else status.source
+
+		source = "" if status.source == "web" else status.source
+		person = author if type == "mention" else source
 
 		# convert UTC datetime to local datetime
 		date = status.created_at.replace(tzinfo=tz.tzutc())
 		localDate = date.astimezone(tz.tzlocal())
-		if person == "web": person == ""
+
 		self.insert(localDate, self.service, type, url, content, person)
 
 	def timeline(self, screenName):

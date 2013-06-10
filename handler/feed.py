@@ -20,72 +20,75 @@ class FeedHandler(base.BaseHandler):
 	def stripHtml(self, htmlContent):
 		return re.sub('<[^<]+?>', '', htmlContent)
 
-	def github(self, token):
-		private = ["https://github.com/organizations/hickerspace/basti2342.private.atom?token=%s" \
-			% token]
+	def githubOrga(self, orga, user, token):
+		url = "https://github.com/organizations/%s/%s.private.atom?token=%s" \
+			% (orga, user, token)
 
-		for url in private:
-			feed = self.parse(url)
-			for entry in feed["entries"]:
-				type = "activity"
-				# try to get the specific event from the id
-				typeMatch = re.findall(r"^tag:github.com,2008:(.*?)Event/\d+$", entry["id"])
-				if typeMatch:
-					type = typeMatch[0]
-				self.insert(entry["updated_parsed"], "github", type, entry["link"], \
-					entry["title"], entry["author"])
+		feed = self.parse(url)
+		for entry in feed["entries"]:
+			type = "activity"
+			# try to get the specific event from the id
+			typeMatch = re.findall(r"^tag:github.com,2008:(.*?)Event/\d+$", entry["id"])
+			if typeMatch:
+				type = typeMatch[0].lower()
+				# try to add *what* got created
+				try:
+					createTypes = ["repository", "branch"]
+					createType = entry["title"].split()[2].lower()
+					if type == "create" and createType in createTypes:
+						type += " %s" % createType
+				except IndexError:
+					print "Could not extract extended create information."
 
-	def facebook(self):
-		urls = ["http://www.facebook.com/feeds/page.php?format=atom10&id=148681465224497"]
+			self.insert(entry["updated_parsed"], "github", type, entry["link"], \
+				entry["title"], entry["author"])
 
-		for url in urls:
-			feed = self.parse(url)
-			for entry in feed["entries"]:
-				cleanContent = self.stripHtml(entry["content"][0]["value"])
-				self.insert(entry["updated_parsed"], "facebook", "wall", \
-					entry["link"], cleanContent)
+	def facebook(self, id):
+		url = "http://www.facebook.com/feeds/page.php?format=atom10&id=%s" % id
 
-	def youtube(self):
-		urls = ["http://gdata.youtube.com/feeds/base/users/hickerspace/uploads" \
-			+ "?alt=rss&v=2&orderby=published"]
+		feed = self.parse(url)
+		for entry in feed["entries"]:
+			cleanContent = self.stripHtml(entry["content"][0]["value"])
+			self.insert(entry["updated_parsed"], "facebook", "wall", \
+				entry["link"], cleanContent)
+
+	def youtube(self, user):
+		url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % user \
+			+ "?alt=rss&v=2&orderby=published"
 		service = "youtube"
-		for url in urls:
-			# get videos
-			feed = self.parse(url)
-			for entry in feed["entries"]:
-				self.insert(entry["updated_parsed"], service, "video", \
-					entry["link"], entry["title"])
 
-			# get comments
-			for entry in feed["entries"]:
-				id = re.findall(r"v=(.*)[&$]", entry["link"])[0]
-				title = entry["title"]
-				link = "http://www.youtube.com/all_comments?v=%s" % id
+		# get videos
+		feed = self.parse(url)
+		for entry in feed["entries"]:
+			self.insert(entry["updated_parsed"], service, "video", \
+				entry["link"], entry["title"])
 
-				commentFeed = self.parse("https://gdata.youtube.com/feeds/api/videos/%s/comments" \
-					% id)
-				for commentEntry in commentFeed["entries"]:
-					content = 'Comment on "%s": %s' % (title, commentEntry["subtitle"] \
-						.encode("latin-1", "ignore"))
-					self.insert(entry["updated_parsed"], service, "comment", link, content)
+		# get comments
+		for entry in feed["entries"]:
+			id = re.findall(r"v=(.*)[&$]", entry["link"])[0]
+			title = entry["title"]
+			link = "http://www.youtube.com/all_comments?v=%s" % id
 
-	def wiki(self):
-		urls = ["http://hickerspace.org/w/index.php" \
-			+ "?title=Spezial:Letzte_%C3%84nderungen&feed=atom"]
+			commentFeed = self.parse("https://gdata.youtube.com/feeds/api/videos/%s/comments" \
+				% id)
+			for commentEntry in commentFeed["entries"]:
+				content = 'Comment on "%s": %s' % (title, commentEntry["subtitle"] \
+					.encode("latin-1", "ignore"))
+				self.insert(entry["updated_parsed"], service, "comment", link, content)
 
-		for url in urls:
-			feed = self.parse(url)
-			for entry in feed["entries"]:
-				# try to parse edit summary
-				summaryMatch = re.findall(r"^<p>(.+?)</p>", entry["summary"])
-				summary = ": %s" % self.stripHtml(summaryMatch[0]) if summaryMatch else ""
-				content = "%s%s" % (entry["title"], summary)
+	def mediaWiki(self, url):
+		feed = self.parse(url)
+		for entry in feed["entries"]:
+			# try to parse edit summary
+			summaryMatch = re.findall(r"^<p>(.+?)</p>", entry["summary"])
+			summary = ": %s" % self.stripHtml(summaryMatch[0]) if summaryMatch else ""
+			content = "%s%s" % (entry["title"], summary)
 
-				self.insert(entry["updated_parsed"], "wiki", "activity", entry["link"], \
-					content.encode("latin-1", "ignore"), entry["author"])
+			self.insert(entry["updated_parsed"], "wiki", "activity", entry["link"], \
+				content.encode("latin-1", "ignore"), entry["author"])
 
-	def soup(self, token):
-		accountRss = "http://hickerspace.soup.io/rss"
+	def soup(self, user, token):
+		accountRss = "http://%s.soup.io/rss" % user
 		notifyRss = "http://www.soup.io/notifications/%s.rss" % token
 		service = "soup"
 
