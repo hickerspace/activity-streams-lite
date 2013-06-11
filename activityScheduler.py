@@ -26,7 +26,7 @@ class ActivityScheduler(baseRunner.BaseRunner):
 				quit()
 
 	def createSchedule(self):
-		logging.info("Perform initial query..")
+		logging.info("Schedule requests..")
 
 		schedules = self.config._sections["schedule"]
 		del schedules["__name__"]

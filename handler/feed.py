@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import base, feedparser, re, json
+from lxml import etree
 
 """
 FeedHandler parses feeds and inserts particular parts into the database.
@@ -39,9 +40,15 @@ class FeedHandler(base.BaseHandler):
 						type += " %s" % createType
 				except IndexError:
 					print "Could not extract extended create information."
+			# get summary
+			parser = etree.HTMLParser()
+			tree = etree.fromstring(entry["content"][0]["value"], parser)
+			summaries = tree.xpath("//blockquote/text()")
+			summary = "; ".join([ s.strip(" \n") for s in summaries ])
+			content = "%s: %s" % (entry["title"], summary) if summary else entry["title"]
 
-			self.insert(entry["updated_parsed"], "github", type, entry["link"], \
-				entry["title"], entry["author"])
+			self.insert(entry["updated_parsed"], "github", type, entry["link"],	content, \
+				entry["author"])
 
 	def facebook(self, id):
 		url = "http://www.facebook.com/feeds/page.php?format=atom10&id=%s" % id
