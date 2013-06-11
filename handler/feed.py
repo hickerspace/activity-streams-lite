@@ -102,6 +102,8 @@ class FeedHandler(base.BaseHandler):
 
 		feedNotify = self.parse(notifyRss)
 		for entry in feedNotify["entries"]:
+			# skip maintenance messages
+			if entry["link"][:22] == "http://updates.soup.io": continue
 			authorMatches = re.findall(r"<span class=\"name\">(.+?)</span>", entry["summary"])
 			author = authorMatches[0] if authorMatches else ""
 			self.insert(entry["updated_parsed"], service, "notification", entry["link"], \
