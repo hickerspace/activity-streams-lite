@@ -67,7 +67,7 @@ class TwitterHandler(base.BaseHandler):
 			author = status.from_user
 
 		url = "http://twitter.com/%s/statuses/%s" % (author, status.id_str)
-		content = self.expand(status.text).encode("latin-1", "ignore")
+		content = self.expand(status.text)
 
 		source = "" if status.source == "web" else status.source
 		person = author if type == "mention" else source

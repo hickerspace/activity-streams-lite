@@ -79,8 +79,7 @@ class FeedHandler(base.BaseHandler):
 			commentFeed = self.parse("https://gdata.youtube.com/feeds/api/videos/%s/comments" \
 				% id)
 			for commentEntry in commentFeed["entries"]:
-				content = 'Comment on "%s": %s' % (title, commentEntry["subtitle"] \
-					.encode("latin-1", "ignore"))
+				content = 'Comment on "%s": %s' % (title, commentEntry["subtitle"])
 				self.insert(entry["updated_parsed"], service, "comment", link, content)
 
 	def mediaWiki(self, url):
@@ -92,7 +91,7 @@ class FeedHandler(base.BaseHandler):
 			content = "%s%s" % (entry["title"], summary)
 
 			self.insert(entry["updated_parsed"], "wiki", "activity", entry["link"], \
-				content.encode("latin-1", "ignore"), entry["author"])
+				content, entry["author"])
 
 	def soup(self, user, token):
 		accountRss = "http://%s.soup.io/rss" % user
@@ -104,8 +103,7 @@ class FeedHandler(base.BaseHandler):
 			attributes = json.loads(entry["soup_attributes"])
 			body = self.stripHtml(attributes["body"])
 			link = entry["links"][-1]["href"]
-			self.insert(entry["updated_parsed"], service, "post", link, \
-				body.encode("latin-1", "ignore"))
+			self.insert(entry["updated_parsed"], service, "post", link, body)
 
 		feedNotify = self.parse(notifyRss)
 		for entry in feedNotify["entries"]:
@@ -114,5 +112,5 @@ class FeedHandler(base.BaseHandler):
 			authorMatches = re.findall(r"<span class=\"name\">(.+?)</span>", entry["summary"])
 			author = authorMatches[0] if authorMatches else ""
 			self.insert(entry["updated_parsed"], service, "notification", entry["link"], \
-				entry["title"].encode("latin-1", "ignore"), author)
+				entry["title"], author)
 

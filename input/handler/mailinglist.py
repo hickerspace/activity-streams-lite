@@ -27,7 +27,7 @@ class MailinglistHandler(base.BaseHandler):
 
 			idxUrl = "%sdate.html" % privateUrl
 			request = urllib2.Request(idxUrl, auth)
-			archiveIdx = urllib2.urlopen(request).read().decode('utf-8')
+			archiveIdx = urllib2.urlopen(request).read()
 			parser = etree.HTMLParser()
 			idxTree = etree.fromstring(archiveIdx, parser)
 			# forms indicate login, so authentication failed
@@ -41,7 +41,7 @@ class MailinglistHandler(base.BaseHandler):
 				# fetch mail
 				mailUrl = "%s%s" % (privateUrl, mailLink)
 				request = urllib2.Request(mailUrl, auth)
-				mail = urllib2.urlopen(request).read().decode('utf-8')
+				mail = urllib2.urlopen(request).read()
 				mailTree = etree.fromstring(mail, parser)
 				mailDate = mailTree.xpath('/html/body/i/text()')
 

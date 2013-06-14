@@ -18,7 +18,7 @@ class BaseRunner(object):
 	def newDbConnection(self):
 		conf = self.config._sections["database"]
 		return MySQLdb.connect(conf["host"], conf["username"], conf["password"], \
-			conf["databasename"])
+			conf["databasename"], charset="utf8", use_unicode=True)
 
 	def wrap(self, method):
 		con = self.newDbConnection()

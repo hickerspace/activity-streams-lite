@@ -1,0 +1,37 @@
+body {
+	background-color: #ebebeb;
+	width: 550px;
+	margin: 0 auto;
+	padding-top: 20px;
+	font-family: "HelveticaNeueLight", "HelveticaNeue-Light", "Helvetica Neue Light", "HelveticaNeue", "Helvetica Neue", 'TeXGyreHerosRegular', "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+	font-weight:300;
+	font-stretch:normal;
+}
+
+a {
+	color: #2e9ec9;
+}
+
+h1 {
+	font-size: 40px;
+	color: #444444;
+	text-shadow: 1px 1px 0px white;
+}
+
+h2 {
+	font-weight: normal;
+	font-size: 27px;
+}
+
+.intro {
+	text-align: justify;
+}
+
+.services {
+	font-weight: bold;
+}
+.types {
+	font-weight: normal;
+	margin-bottom: 15px;
+}
+

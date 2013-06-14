@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+	<head>
+		<title>Activity Streams Lite</title>
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+	</head>
+	<body>
+		<h1>Activity Streams Lite</h1>
+		<p class="intro">Syndicating Hickerspace activities from different sources like GitHub, YouTube, Facebook and many more. This project is based on the idea of <a href="http://activitystrea.ms/">Activity Streams</a>.</p>
+		<p>Development happens on <a href="https://github.com/hickerspace/activity-streams-lite">GitHub</a>.</p>
+
+		<div class="content">
+			{% block body %}{% endblock %}
+		</div>
+	</body>
+</html>
+

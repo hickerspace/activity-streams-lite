@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+			<h2>Available formats</h2>
+			<p>Get our last 30 activities as <a href="{{ url_for('jsonOutput') }}">JSON</a> or <a href="{{ url_for('atomOutput') }}">Atom</a>.</p>
+
+			<h2>Services and their corresponding types</h2>
+			<ul class="services">
+			{% for service, types in entries.items() %}
+				<li>{{ service }}
+					<ul class="types">
+					{% for type in types %}
+						<li>{{ type }}</li>
+					{% endfor %}
+					</ul>
+				</li>
+			{% endfor %}
+			</ul>
+{% endblock %}
