@@ -8,7 +8,7 @@ Configure db access, private tokens and other credentials in `config`.
 
 Execute `activityScheduler.py` to start.
 
-## Dependencies
+## Dependencies input
 * MySQLdb
 * APScheduler
 * feedparser
@@ -18,6 +18,12 @@ Execute `activityScheduler.py` to start.
 * httplib2
 
 `pip install MySQL-python apscheduler feedparser lxml python-dateutil tweepy httplib2`
+
+## Dependencies output
+* Flask
+* MySQLdb
+
+`pip install MySQL-python Flask`
 
 ## How will it work?
 See our nice [chart](http://hickerspace.org/wiki/Datei:Activitystreams.jpg).
@@ -42,4 +48,4 @@ See our nice [chart](http://hickerspace.org/wiki/Datei:Activitystreams.jpg).
 * Mailing lists
 
 ## Output
-Nothing done yet.
+* JSON/Atom output (last 30 activities)
