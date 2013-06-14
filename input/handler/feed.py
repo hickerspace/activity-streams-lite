@@ -37,7 +37,7 @@ class FeedHandler(base.BaseHandler):
 					createTypes = ["repository", "branch"]
 					createType = entry["title"].split()[2].lower()
 					if type == "create" and createType in createTypes:
-						type += " %s" % createType
+						type += "-%s" % createType
 				except IndexError:
 					print "Could not extract extended create information."
 			# get summary

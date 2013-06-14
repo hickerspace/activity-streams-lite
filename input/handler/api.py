@@ -47,6 +47,6 @@ class ApiHandler(base.BaseHandler):
 		lights = [ "%s: %s" % (color, lightStatus[status[color]]) for color in colors ]
 		extendedInfo = "" if status["mode"] == "random" else " (%s)" % ", ".join(lights)
 		content = 'Traffic light mode switched to "%s"%s.' % (status["mode"], extendedInfo)
-		self.insert(updated, "sensor", "traffic light", \
+		self.insert(updated, "sensor", "traffic-light", \
 			"https://hickerspace.org/wiki/Verkehrsampel", content)
 
