@@ -21,6 +21,8 @@ h1 {
 h2 {
 	font-weight: normal;
 	font-size: 27px;
+	margin-top: 30px;
+	margin-bottom: -10px;
 }
 
 .intro {
@@ -35,3 +37,20 @@ h2 {
 	margin-bottom: 15px;
 }
 
+blockquote {
+	margin-bottom: 20px;
+	margin-left: 3px;
+	margin-right: 3px;
+	padding: 10px;
+	font-family: "Lucida Console", Monaco, monospace;
+	font-size: 13px;
+	-webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+	-moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+	box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+}
+
+blockquote a {
+	color: black;
+	font-weight: bold;
+	text-decoration: none;
+}

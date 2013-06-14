@@ -7,7 +7,7 @@ from werkzeug.contrib.atom import AtomFeed
 from logger import log
 
 DEBUG = True
-ORGANZIZATION = ''
+ORGANIZATION = ''
 
 # database
 HOST = ''
@@ -37,6 +37,19 @@ def teardown_request(exception):
 	if not db:
 		db.close
 
+def getActivities():
+	g.cursor.execute('SELECT DISTINCT service, type FROM `activities`')
+	# which service-type-combinations got requested
+	reqServices = [r for row in g.cursor.fetchall() if ".".join(row) in request.args for r in row]
+	# build prepared statement
+	where = 'WHERE %s' % ' OR '.join(['(service = %s and type = %s)'] * (len(reqServices)/2)) \
+		if reqServices else ""
+	print 'SELECT datetime, person, service, type, content, url FROM `activities`' \
+		+ ' ORDER BY `datetime` %s DESC LIMIT 30' % where, reqServices
+	g.cursor.execute('SELECT datetime, person, service, type, content, url FROM `activities`' \
+		+ '%s ORDER BY `datetime` DESC LIMIT 30' % where, reqServices)
+	return g.cursor.fetchall()
+
 @app.route('/')
 def welcome():
 	g.cursor.execute('SELECT DISTINCT service, type FROM `activities`')
@@ -48,24 +61,18 @@ def welcome():
 
 @app.route('/asl.json')
 def jsonOutput():
-	#request.args.get('myParam')
-	g.cursor.execute('SELECT datetime, person, service, type, content, url FROM `activities`' \
-		+ ' ORDER BY `datetime` DESC LIMIT 30')
 	entries = [dict(datetime=str(row[0]), person=row[1], \
 		service=row[2], type=row[3], content=row[4], url=row[5]) \
-		for row in g.cursor.fetchall()]
+		for row in getActivities()]
 	return jsonify(results=entries)
 
 @app.route('/asl.atom')
 def atomOutput():
-	g.cursor.execute('SELECT datetime, person, service, type, content, url FROM `activities`' \
-		+ ' ORDER BY `datetime` DESC LIMIT 30')
-
 	feed = AtomFeed('%s - Activity Streams Lite' % app.config['ORGANIZATION'], \
 		feed_url=request.url, url=request.url_root, subtitle='Syndicating %s activities' \
 		% app.config['ORGANIZATION'])
 
-	for row in g.cursor.fetchall():
+	for row in getActivities():
 		datetime, person, service, type, content, url = row
 		categories = [dict(term=service, label="service"), dict(term=type, label="type")]
 		title = '%s..' % content[:50] if len(content) > 52 else content

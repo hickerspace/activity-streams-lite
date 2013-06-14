@@ -49,3 +49,7 @@ See our nice [chart](http://hickerspace.org/wiki/Datei:Activitystreams.jpg).
 
 ## Output
 * JSON/Atom output (last 30 activities)
+* Filter added (append (multiple) service.type as GET parameters)
+
+## Known bugs
+* datetime is currently local, but the atom feed generator thinks that it's UTC.
