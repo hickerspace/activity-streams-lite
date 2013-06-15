@@ -51,6 +51,6 @@ class MailinglistHandler(base.BaseHandler):
 					mailDate = datetime.strptime(mailDate[0], "%a %b  %d %H:%M:%S %Z %Y")
 					locale.setlocale(locale.LC_TIME, '')
 
-					self.insert(mailDate, "mailing list", listName, mailUrl, \
+					self.insert(mailDate, "mailing-list", listName, mailUrl, \
 						"New mail on %s mailing list." % listName.title())
 
