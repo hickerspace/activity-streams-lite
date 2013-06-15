@@ -6,8 +6,16 @@ from flask import Flask, request, render_template, g, jsonify
 from werkzeug.contrib.atom import AtomFeed
 from logger import log
 
-DEBUG = True
 ORGANIZATION = ''
+SERVICES = {'wiki': ['activity'],
+			'github': ['push', 'create-repository', 'create-branch', 'fork', 'watch', 'member', \
+				'follow'],
+			'mailing-list': ['kontakt', 'hickerspace'],
+			'twitter': ['tweet', 'reply', 'mention'],
+			'youtube': ['video', 'comment'],
+			'soup': ['post', 'notification'],
+			'facebook': ['wall'],
+			'sensor': ['mate-o-meter', 'traffic-light', 'room']}
 
 # database
 HOST = ''
@@ -38,26 +46,21 @@ def teardown_request(exception):
 		db.close
 
 def getActivities():
-	g.cursor.execute('SELECT DISTINCT service, type FROM `activities`')
-	# which service-type-combinations got requested
-	reqServices = [r for row in g.cursor.fetchall() if ".".join(row) in request.args for r in row]
+	# generate (service, type)-tuples
+	combos = [(service, type) for service, types in app.config['SERVICES'].items() \
+		for type in types]
+	# which service-type-combinations got requested?
+	reqServices = [r for row in combos if ".".join(row) in request.args for r in row]
 	# build prepared statement
 	where = 'WHERE %s' % ' OR '.join(['(service = %s and type = %s)'] * (len(reqServices)/2)) \
 		if reqServices else ""
-	print 'SELECT datetime, person, service, type, content, url FROM `activities`' \
-		+ ' ORDER BY `datetime` %s DESC LIMIT 30' % where, reqServices
 	g.cursor.execute('SELECT datetime, person, service, type, content, url FROM `activities`' \
 		+ '%s ORDER BY `datetime` DESC LIMIT 30' % where, reqServices)
 	return g.cursor.fetchall()
 
 @app.route('/')
 def welcome():
-	g.cursor.execute('SELECT DISTINCT service, type FROM `activities`')
-	entries = {}
-	for row in g.cursor.fetchall():
-		if row[0] not in entries: entries[row[0]] = []
-		entries[row[0]].append(row[1])
-	return render_template('show_entries.html', entries=entries)
+	return render_template('show_entries.html', entries=app.config['SERVICES'])
 
 @app.route('/asl.json')
 def jsonOutput():
