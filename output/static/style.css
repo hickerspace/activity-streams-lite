@@ -31,10 +31,23 @@ h2 {
 
 .services {
 	font-weight: bold;
+	width: 550px;
+	margin-top: 30px;
 }
+
+.services li {
+	float: left;
+	width: 260px;
+	margin-bottom: 20px;
+}
+
 .types {
 	font-weight: normal;
 	margin-bottom: 15px;
+}
+
+.types li {
+	margin-bottom: 0px;
 }
 
 blockquote {
@@ -50,7 +63,7 @@ blockquote {
 }
 
 blockquote a {
-	color: black;
+	color: #4D4D4D;
 	font-weight: bold;
 	text-decoration: none;
 }

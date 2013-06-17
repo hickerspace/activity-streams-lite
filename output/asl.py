@@ -51,11 +51,29 @@ def getActivities():
 		for type in types]
 	# which service-type-combinations got requested?
 	reqServices = [r for row in combos if ".".join(row) in request.args for r in row]
-	# build prepared statement
-	where = 'WHERE %s' % ' OR '.join(['(service = %s and type = %s)'] * (len(reqServices)/2)) \
-		if reqServices else ""
-	g.cursor.execute('SELECT datetime, person, service, type, content, url FROM `activities`' \
-		+ '%s ORDER BY `datetime` DESC LIMIT 30' % where, reqServices)
+
+	try:
+		page = int(request.args['page'])
+		if page < 1: raise KeyError
+	except KeyError:
+		page = 1
+
+	wheres = []
+	try:
+		wheres.append('pk_id > %d' % int(request.args['last_id']))
+	except (KeyError, ValueError):
+		# no or invalid last_id
+		pass
+
+	# build "select service/type" prepared statement
+	prepSelect = ['(service = %s and type = %s)']*(len(reqServices)/2)
+	if prepSelect:
+		wheres.append(' OR '.join(prepSelect))
+
+	# build WHERE
+	where = 'WHERE %s' % ' AND '.join(wheres) if wheres else ""
+	g.cursor.execute('SELECT pk_id, datetime, person, service, type, content, url FROM `activities`' \
+		+ '%s ORDER BY `datetime` DESC LIMIT %d,%d' % (where, (page-1)*30, (page)*30), reqServices)
 	return g.cursor.fetchall()
 
 @app.route('/')
@@ -64,8 +82,8 @@ def welcome():
 
 @app.route('/asl.json')
 def jsonOutput():
-	entries = [dict(datetime=str(row[0]), person=row[1], \
-		service=row[2], type=row[3], content=row[4], url=row[5]) \
+	entries = [dict(id=row[0], datetime=str(row[1]), person=row[2], \
+		service=row[3], type=row[4], content=row[5], url=row[6]) \
 		for row in getActivities()]
 	return jsonify(results=entries)
 
@@ -76,11 +94,11 @@ def atomOutput():
 		% app.config['ORGANIZATION'])
 
 	for row in getActivities():
-		datetime, person, service, type, content, url = row
+		id, datetime, person, service, type, content, url = row
 		categories = [dict(term=service, label="service"), dict(term=type, label="type")]
 		title = '%s..' % content[:50] if len(content) > 52 else content
 		feed.add(unicode(title), unicode(content), content_type='text', \
-			author=person, url=url, updated=datetime, categories=categories)
+			author=person, url=url, updated=datetime, categories=categories, id=id)
 
 	return feed.get_response()
 

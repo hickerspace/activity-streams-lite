@@ -1,17 +1,27 @@
 {% extends "layout.html" %}
 {% block body %}
-			<h2>Available formats</h2>
-			<p>Get our last 30 activities as <a href="{{ url_for('jsonOutput') }}">JSON</a> or <a href="{{ url_for('atomOutput') }}">Atom</a>.</p>
+			<h2>Available Formats</h2>
+			<p>Get our activities as <a href="{{ url_for('jsonOutput') }}">JSON</a> or <a href="{{ url_for('atomOutput') }}">Atom</a>.</p>
+
+			<h2>Pagination & Save Points</h2>
+			<p>Add the <i>page</i> parameter to request the first/second/third/.. 30 activities.
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?page=2">http://asl.hickerspace.org/asl.json?page=2</a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.atom?twitter.tweet&page=2">http://asl.hickerspace.org/asl.atom?twitter.tweet&page=2</a></blockquote>
+			</p>
+			<p>
+			If you want only new activities added since your last request, provide the <i>last_id</i> parameter. last_id should be the last activity you are aware of.
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?last_id=170">http://asl.hickerspace.org/asl.json?last_id=170</a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.atom?mailing-list&last_id=188">http://asl.hickerspace.org/asl.atom?mailing-list&last_id=188</a></blockquote>
+			</p>
 
 			<h2>Filter</h2>
-			<p>Add (multiple) GET parameter(s) in this syntax: <i>service.type</i>
+			<p>Add (multiple) parameter(s) in this syntax: <i>service.type</i>
 				<blockquote><a href="http://asl.hickerspace.org/asl.json?youtube.comment">http://asl.hickerspace.org/asl.json?youtube.comment</a></blockquote>
 				<blockquote><a href="http://asl.hickerspace.org/asl.json?youtube.comment&youtube.video">http://asl.hickerspace.org/asl.json?youtube.comment&youtube.video</a></blockquote>
 				<blockquote><a href="http://asl.hickerspace.org/asl.atom?soup.notification&soup.post">http://asl.hickerspace.org/asl.atom?soup.notification&soup.post</a></blockquote>
 			</p>
-			<p>These requests are also limited to 30 activities at the moment.</p>
 
-			<h2>Services and their corresponding types</h2>
+			<h2>Services and their corresponding Types</h2>
 			<ul class="services">
 			{% for service, types in entries.items() %}
 				<li>{{ service }}
