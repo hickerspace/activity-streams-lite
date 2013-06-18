@@ -10,7 +10,7 @@ ORGANIZATION = ''
 SERVICES = {'wiki': ['activity'],
 			'github': ['push', 'create-repository', 'create-branch', 'fork', 'watch', 'member', \
 				'follow'],
-			'mailing-list': ['kontakt', 'hickerspace'],
+			'mailing-list': [ ],
 			'twitter': ['tweet', 'reply', 'mention'],
 			'youtube': ['video', 'comment'],
 			'soup': ['post', 'notification'],
@@ -55,7 +55,7 @@ def getActivities():
 	try:
 		page = int(request.args['page'])
 		if page < 1: raise KeyError
-	except KeyError:
+	except (KeyError, ValueError):
 		page = 1
 
 	wheres = []
