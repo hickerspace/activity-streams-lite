@@ -45,7 +45,7 @@ See our nice [chart](http://hickerspace.org/wiki/Datei:Activitystreams.jpg).
   * Mate-O-Meter
   * Traffic light
 * Twitter (timeline + mentions via Twitter-API)
-* Mailing lists
+* Mailing lists (posts + new subscribers)
 
 ## Output
 * JSON/Atom output
