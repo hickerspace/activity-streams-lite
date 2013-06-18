@@ -48,8 +48,9 @@ See our nice [chart](http://hickerspace.org/wiki/Datei:Activitystreams.jpg).
 * Mailing lists
 
 ## Output
-* JSON/Atom output (last 30 activities)
+* JSON/Atom output
 * Filter added (append (multiple) service.type as GET parameters)
+* Pagination & Save Point (last_id) added
 
 ## Known bugs
 * datetime is currently local, but the atom feed generator thinks that it's UTC.
