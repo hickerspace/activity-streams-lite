@@ -89,11 +89,19 @@ class BaseRunner(object):
 		twit.mentions(self.twitterAccNames)
 		return twit
 
-	def mailinglist(self, con):
+	def listposts(self, con):
 		conf = self.config._sections["mailman"]
 		mail = MailinglistHandler(con)
 		for mailmanList in self.mailmanLists:
 			mail.posts(conf["weburl"], mailmanList, conf["loginmailaddress"], \
+				conf["loginpassword"])
+		return mail
+
+	def listsubscribers(self, con):
+		conf = self.config._sections["mailman"]
+		mail = MailinglistHandler(con)
+		for mailmanList in self.mailmanLists:
+			mail.subscribers(conf["weburl"], mailmanList, conf["loginmailaddress"], \
 				conf["loginpassword"])
 		return mail
 

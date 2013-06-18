@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import base, tweepy, re, httplib2, json
-from os import sep, access, W_OK
+from os import sep
 from os.path import dirname, abspath, join
 from dateutil import tz
 

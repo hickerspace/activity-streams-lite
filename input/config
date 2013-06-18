@@ -11,7 +11,8 @@ mateometer: * * * * * * */2 0
 trafficlight: * * * * * * */2 0
 twittimeline: * * * * * * */10 0
 twitmentions: * * * * * * */5 0
-mailinglist: * * * * * * */5 0
+listposts: * * * * * * */5 0
+listsubscribers: * * * * * * */5 0
 
 [database]
 host: 
