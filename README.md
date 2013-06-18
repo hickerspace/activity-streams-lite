@@ -28,6 +28,9 @@ Execute `activityScheduler.py` to start.
 ## How will it work?
 See our nice [chart](http://hickerspace.org/wiki/Datei:Activitystreams.jpg).
 
+## Demo
+Try a live demo at http://asl.hickerspace.org.
+
 ## Input
 ### To be done
 * Web form
