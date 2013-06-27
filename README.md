@@ -54,6 +54,7 @@ Try a live demo at http://asl.hickerspace.org.
 * JSON/Atom output
 * Filter added (append (multiple) service.type as GET parameters)
 * Pagination & Save Point (last_id) added
+* wildcards introduced
 
 ## Known bugs
 * datetime is currently local, but the atom feed generator thinks that it's UTC.

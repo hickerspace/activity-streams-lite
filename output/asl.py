@@ -11,7 +11,7 @@ SERVICES = {'wiki': ['activity'],
 			'github': ['push', 'create-repository', 'create-branch', 'fork', 'watch', 'member', \
 				'follow'],
 			'mailing-list': [ ],
-			'twitter': ['tweet', 'reply', 'mention'],
+			'twitter': ['tweet', 'retweet', 'reply', 'mention'],
 			'youtube': ['video', 'comment'],
 			'soup': ['post', 'notification'],
 			'facebook': ['wall'],
@@ -46,18 +46,14 @@ def teardown_request(exception):
 		db.close
 
 def getActivities():
-	# generate (service, type)-tuples
-	combos = [(service, type) for service, types in app.config['SERVICES'].items() \
-		for type in types]
-	# which service-type-combinations got requested?
-	reqServices = [r for row in combos if ".".join(row) in request.args for r in row]
-
+	# pagination
 	try:
 		page = int(request.args['page'])
 		if page < 1: raise KeyError
 	except (KeyError, ValueError):
 		page = 1
 
+	# save point (last_id)
 	wheres = []
 	try:
 		wheres.append('pk_id > %d' % int(request.args['last_id']))
@@ -65,15 +61,29 @@ def getActivities():
 		# no or invalid last_id
 		pass
 
+	# filter (select/deselect)
+	selected = []
+	deselected = []
+	for arg in request.args:
+		try:
+			service, type_ = arg.split(".")
+			# accept % and * as wildcards
+			if type_ == '*': type_ = '%'
+			if service[0] == "-": deselected += [service[1:], type_]
+			else: selected += [service, type_]
+		except ValueError:
+			continue
+
 	# build "select service/type" prepared statement
-	prepSelect = ['(service = %s and type = %s)']*(len(reqServices)/2)
-	if prepSelect:
-		wheres.append(' OR '.join(prepSelect))
+	prepSelect = ['(service LIKE %s AND type LIKE %s)']*(len(selected)/2)
+	prepSelect += ['NOT (service LIKE %s AND type LIKE %s)']*(len(deselected)/2)
+
+	if prepSelect: wheres.append(' OR '.join(prepSelect))
 
 	# build WHERE
-	where = 'WHERE %s' % ' AND '.join(wheres) if wheres else ""
+	where = ' WHERE %s' % ' AND '.join(wheres) if wheres else ""
 	g.cursor.execute('SELECT pk_id, datetime, person, service, type, content, url FROM `activities`' \
-		+ '%s ORDER BY `datetime` DESC LIMIT %d,%d' % (where, (page-1)*30, (page)*30), reqServices)
+		+ '%s ORDER BY `datetime` DESC LIMIT %d,%d' % (where, (page-1)*30, (page)*30), selected+deselected)
 	return g.cursor.fetchall()
 
 @app.route('/')

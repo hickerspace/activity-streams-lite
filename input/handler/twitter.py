@@ -59,7 +59,12 @@ class TwitterHandler(base.BaseHandler):
 
 	def insertStatus(self, status, type=None):
 		if not type:
-			type = "reply" if status.text[0] == "@" else "tweet"
+			if status.text[0] == "@":
+				type = "reply"
+			elif status.text[:3] == "RT ":
+				type = "retweet"
+			else:
+				type = "tweet"
 
 		try:
 			author = status.author.screen_name
