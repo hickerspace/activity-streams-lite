@@ -1,8 +1,15 @@
 [database]
 host: 
-databaseName: 
+databasename: 
 username: 
 password: 
+
+[logging]
+# log levels: NOTSET (0), DEBUG (10), INFO (20), WARNING (30; default), ERROR (40), CRITICAL(50)
+level:10
+filename:
+format:%(asctime)s %(levelname)-8s %(message)s
+datefmt:%Y.%m.%d %H:%M:%S
 
 [accounts]
 twitter:twit1,twit2
