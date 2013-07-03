@@ -40,7 +40,7 @@ class BaseRunner(object):
 			try:
 				if methodName == "api":
 					obj.room()
-					obj.matewaage()
+					obj.mateometer()
 					obj.trafficlight()
 				elif methodName == "twitter":
 					obj.auth(**conf)

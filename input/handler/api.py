@@ -29,7 +29,7 @@ class ApiHandler(base.BaseHandler):
 		self.insert(since, "sensor", "room", \
 			"https://hickerspace.org/wiki/Raumstatus", content)
 
-	def matewaage(self):
+	def mateometer(self):
 		status = self.apiCall("mate-o-meter")
 		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
 
