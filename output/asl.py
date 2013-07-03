@@ -76,9 +76,10 @@ def getActivities():
 
 	# build "select service/type" prepared statement
 	prepSelect = ['(service LIKE %s AND type LIKE %s)']*(len(selected)/2)
-	prepSelect += ['NOT (service LIKE %s AND type LIKE %s)']*(len(deselected)/2)
+	deselect = ['NOT (service LIKE %s AND type LIKE %s)']*(len(deselected)/2)
 
 	if prepSelect: wheres.append(' OR '.join(prepSelect))
+	if deselect: wheres.append(' AND '.join(deselect))
 
 	# build WHERE
 	where = ' WHERE %s' % ' AND '.join(wheres) if wheres else ""
