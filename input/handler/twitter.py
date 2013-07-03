@@ -15,10 +15,14 @@ class TwitterHandler(base.BaseHandler):
 		self.expandedUrls = join(dirname(abspath(__file__)), \
 			"..%(sep)sdata%(sep)sexpanded_urls.json" % {"sep": sep})
 
-	def auth(self, consumerKey, consumerSecret, accessToken, accessTokenSecret):
+	def twitter(self):
+		# pseudo method to get recognized
+		pass
+
+	def auth(self, consumerkey, consumersecret, accesstoken, accesstokensecret):
 		# create Twitter connection
-		auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
-		auth.set_access_token(accessToken, accessTokenSecret)
+		auth = tweepy.OAuthHandler(consumerkey, consumersecret)
+		auth.set_access_token(accesstoken, accesstokensecret)
 		self.api = tweepy.API(auth)
 
 	def resolve(self, url, expanded):

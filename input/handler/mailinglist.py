@@ -18,14 +18,18 @@ class MailinglistHandler(base.BaseHandler):
 		self.subscriberFile = join(dirname(abspath(__file__)), \
 			"..%(sep)sdata%(sep)ssubscribers.json" % {"sep": sep})
 
-	def posts(self, mailmanUrl, listName, mail="", password=""):
-		auth = urllib.urlencode({"username": mail, "password": password})
+	def mailman(self):
+		# pseudo method to get recognized
+		pass
+
+	def posts(self, weburl, listname, loginmail="", loginpassword=""):
+		auth = urllib.urlencode({"username": loginmail, "password": loginpassword})
 		# current and last month
 		dates = [datetime.now(), datetime.now() - relativedelta(months=1)]
 		for date in dates:
 			# request archive index for specific month
 			locale.setlocale(locale.LC_TIME, 'C')
-			privateUrl = "%sprivate/%s/%d-%s/" % (mailmanUrl, listName, date.year, \
+			privateUrl = "%sprivate/%s/%d-%s/" % (weburl, listname, date.year, \
 				date.strftime("%B"))
 			locale.setlocale(locale.LC_TIME, '')
 
@@ -36,7 +40,7 @@ class MailinglistHandler(base.BaseHandler):
 			idxTree = etree.fromstring(archiveIdx, parser)
 			# forms indicate login, so authentication failed
 			if idxTree.xpath('//form'):
-				print "Authentication for %s with %s failed." % (listName, mail)
+				print "Authentication for %s with %s failed." % (listname, loginmail)
 				break
 
 			mailLinks = idxTree.xpath('/html/body/ul[2]/li/a/@href')
@@ -55,12 +59,12 @@ class MailinglistHandler(base.BaseHandler):
 					mailDate = datetime.strptime(mailDate[0], "%a %b  %d %H:%M:%S %Z %Y")
 					locale.setlocale(locale.LC_TIME, '')
 
-					self.insert(mailDate, "mailing-list", listName, mailUrl, \
-						"New mail on %s mailing list." % listName.title())
+					self.insert(mailDate, "mailing-list", "new-mail", mailUrl, \
+						"New mail on %s mailing list." % listname.title())
 
-	def subscribers(self, mailmanUrl, listName, mail="", password=""):
-		post = urllib.urlencode({"roster-email": mail, "roster-pw": password, "language": "en"})
-		request = urllib2.Request("%sroster/%s" % (mailmanUrl, listName), post)
+	def subscribers(self, weburl, listname, loginmail="", loginpassword=""):
+		post = urllib.urlencode({"roster-email": loginmail, "roster-pw": loginpassword, "language": "en"})
+		request = urllib2.Request("%sroster/%s" % (weburl, listname), post)
 		subscribers = urllib2.urlopen(request).read()
 		parser = etree.HTMLParser()
 		subscriberTree = etree.fromstring(subscribers, parser)
@@ -71,13 +75,13 @@ class MailinglistHandler(base.BaseHandler):
 		try:
 			with open(self.subscriberFile) as f:
 				oldSubscriberNums = json.load(f)
-				if newSubscriberNum > oldSubscriberNums[listName]:
-					diff = newSubscriberNum - oldSubscriberNums[listName]
+				if newSubscriberNum > oldSubscriberNums[listname]:
+					diff = newSubscriberNum - oldSubscriberNums[listname]
 					content = "%d new subscribers" % diff if diff > 1 else "New subscriber"
 
-					self.insert(datetime.now(), "mailing-list", listName.lower(), \
-						"%slistinfo/%s#subscribers" % (mailmanUrl, listName), \
-						"%s on %s mailing list." % (content, listName.title()))
+					self.insert(datetime.now(), "mailing-list", "new-subscriber", \
+						"%slistinfo/%s#subscribers" % (weburl, listname), \
+						"%s on %s mailing list." % (content, listname.title()))
 		except IOError:
 			# file doesn't exist yet
 			oldSubscriberNums = {}
@@ -86,6 +90,6 @@ class MailinglistHandler(base.BaseHandler):
 			pass
 
 		with open(self.subscriberFile, "w") as f:
-			oldSubscriberNums[listName] = newSubscriberNum
+			oldSubscriberNums[listname] = newSubscriberNum
 			json.dump(oldSubscriberNums, f)
 

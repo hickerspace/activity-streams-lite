@@ -83,7 +83,7 @@ def getActivities():
 
 	# build WHERE
 	where = ' WHERE %s' % ' AND '.join(wheres) if wheres else ""
-	g.cursor.execute('SELECT pk_id, datetime, person, service, type, content, url FROM `activities`' \
+	g.cursor.execute('SELECT pk_id, datetime, person, service, type, account, content, url FROM `activities`' \
 		+ '%s ORDER BY `datetime` DESC LIMIT %d,%d' % (where, (page-1)*30, (page)*30), selected+deselected)
 	return g.cursor.fetchall()
 
@@ -94,7 +94,7 @@ def welcome():
 @app.route('/asl.json')
 def jsonOutput():
 	entries = [dict(id=row[0], datetime=str(row[1]), person=row[2], \
-		service=row[3], type=row[4], content=row[5], url=row[6]) \
+		service=row[3], type=row[4], account=row[5], content=row[6], url=row[7]) \
 		for row in getActivities()]
 	return jsonify(results=entries)
 
@@ -105,9 +105,9 @@ def atomOutput():
 		% app.config['ORGANIZATION'])
 
 	for row in getActivities():
-		id, datetime, person, service, type, content, url = row
+		id, datetime, person, service, type, account, content, url = row
 		categories = [dict(term=service, label="service"), dict(term=type, label="type")]
-		title = '%s..' % content[:50] if len(content) > 52 else content
+		title = '[%s] @%s %s' % (service, account, type)
 		feed.add(unicode(title), unicode(content), content_type='text', \
 			author=person, url=url, updated=datetime, categories=categories, id=id)
 

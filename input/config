@@ -1,34 +1,48 @@
-# Schedule update requests
-# year month day week day_of_week hour minute second
-[schedule]
-github: * * * * * * */15 0
-facebook: * * * * * * */15 0
-youtube: * * * * * * */15 0
-mediawiki: * * * * * * */5 0
-soup: * * * * * * */15 0
-room: * * * * * * */2 0
-mateometer: * * * * * * */2 0
-trafficlight: * * * * * * */2 0
-twittimeline: * * * * * * */10 0
-twitmentions: * * * * * * */5 0
-listposts: * * * * * * */5 0
-listsubscribers: * * * * * * */5 0
-
 [database]
 host: 
-databaseName: 
+databasename: 
 username: 
 password: 
 
-[twitter]
-# (create an app on http://dev.twitter.com/)
-accountNames:  ; use comma seperation for several items
+[logging]
+# Log levels: DEBUG (10), INFO (20), WARNING (30), ERROR (40), CRITICAL(50)
+level:10
+filename: debug.log
+format: %%(asctime)s %%(levelname)-8s %%(message)s
+datefmt: %%Y.%%m.%%d %%H:%%M:%%S
+
+[schedule]
+# Schedule update requests: leave out what you do not need
+# year month day week day_of_week hour minute
+github: * * * * * * */15
+facebook: * * * * * * */15
+youtube: * * * * * * */15
+mediawiki: * * * * * * */5
+soup: * * * * * * */15
+twitter: * * * * * * */10
+mailman: * * * * * * */5
+api: * * * * * * */2
+
+[accounts]
+# Set account names for the services you scheduled and create a corresponding section
+# [service_accountname] below.
+twitter: 
+github: 
+facebook: 
+youtube: 
+mediawiki: 
+soup: 
+mailman: 
+api: 
+
+[twitter_sample]
+# (Create an app on http://dev.twitter.com/)
 consumerKey: 
 consumerSecret: 
 accessToken: 
 accessTokenSecret: 
 
-[github]
+[github_sample]
 # Provide name of your organziation, a user who is member of it and the user token.
 # Switch to organization context, click on "News Feed" and copy the token:
 # https://github.com/organizations/hickerspace/basti2342.private.atom?token=THIS_IS_THE_TOKEN
@@ -36,30 +50,31 @@ organization:
 user: 
 token: 
 
-[facebook]
+[facebook_sample]
 # Get link of logo and copy the ID:
 # http://www.facebook.com/photo.php?fbid=148687508557226&set=a.148684541890856.33197.THIS_IS_THE_ID&type=1&source=11
 id: 
 
-[youtube]
+[youtube_sample]
 # Provide your account name
 user: 
 
-[mediawiki]
+[mediawiki_hickerspace]
 # Provide the Recent Changes atom feed.
 feedurl: 
 
-[soup]
+[soup_hickerspace]
 # Go to http://www.soup.io/notifications, click on "RSS-Feed" an copy the token:
 # http://www.soup.io/notifications/THIS_IS_THE_TOKEN.rss
 user: 
 token: 
 
-[mailman]
-# Provide list names and url to webinterface (without list names etc)
+[mailman_hickerspace]
+# Provide list name and url to webinterface (without list name etc; with tailing slash)
 # In case of protected archives enter credentials of a subscribed user (must be subscribed on all lists)
 # (E.g. create a new user and disable mail delivery)
-lists:  ; use comma seperation for several items
+listname: http://exmample.com/mailman/
 weburl: 
-loginMailAddress: 
-loginPassword: 
+loginmail: 
+loginpassword: 
+

@@ -12,6 +12,10 @@ class ApiHandler(base.BaseHandler):
 	def __init__(self, dbConnection):
 		super(ApiHandler, self).__init__(dbConnection)
 
+	def api(self):
+		# pseudo method to get recognized
+		pass
+
 	def apiCall(self, resource):
 		apiUrl = "https://hickerspace.org/api/%s" % resource
 		request = urllib2.Request(apiUrl)
@@ -39,7 +43,7 @@ class ApiHandler(base.BaseHandler):
 		self.insert(updated, "sensor", "mate-o-meter", \
 			"https://hickerspace.org/Mate-O-Meter", content)
 
-	def trafficLight(self):
+	def trafficlight(self):
 		status = self.apiCall("ampel")
 		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
 		colors = ["red", "yellow", "green"]

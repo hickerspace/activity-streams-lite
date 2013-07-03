@@ -16,8 +16,15 @@ class BaseHandler(object):
 		self.cursor = dbConnection.cursor()
 		self.newRecords = 0
 		self.duplicateQueries = 0
+		self.account = None
+
+	def setAccount(self, account):
+		self.account = account
 
 	def insert(self, date, service, type, url="", content="", person=""):
+		if not self.account:
+			raise ValueError("No account set.")
+
 		# convert date to SQL DATETIME
 		if isinstance(date, struct_time):
 			date = self.utcStruct2localDatetime(date)
@@ -31,8 +38,8 @@ class BaseHandler(object):
 
 		try:
 			self.cursor.execute("INSERT INTO activities (datetime, person, service, type, " \
-				+ "content, url) VALUES (%s, %s, %s, %s, %s, %s)", (date, person, service, \
-				type, content, url))
+				+ "account, content, url) VALUES (%s, %s, %s, %s, %s, %s, %s)", (date, person, \
+				service, type, self.account, content, url))
 			self.newRecords += 1
 		except IntegrityError as e:
 			# duplicate entry

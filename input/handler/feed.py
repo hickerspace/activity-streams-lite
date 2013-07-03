@@ -21,9 +21,9 @@ class FeedHandler(base.BaseHandler):
 	def stripHtml(self, htmlContent):
 		return re.sub('<[^<]+?>', '', htmlContent)
 
-	def githubOrga(self, orga, user, token):
+	def github(self, organization, user, token):
 		url = "https://github.com/organizations/%s/%s.private.atom?token=%s" \
-			% (orga, user, token)
+			% (organization, user, token)
 
 		feed = self.parse(url)
 		for entry in feed["entries"]:
@@ -80,10 +80,11 @@ class FeedHandler(base.BaseHandler):
 				% id)
 			for commentEntry in commentFeed["entries"]:
 				content = 'Comment on "%s": %s' % (title, commentEntry["subtitle"])
-				self.insert(entry["updated_parsed"], service, "comment", link, content)
+				author = commentEntry["author"]
+				self.insert(entry["updated_parsed"], service, "comment", link, content, author)
 
-	def mediaWiki(self, url):
-		feed = self.parse(url)
+	def mediawiki(self, feedurl):
+		feed = self.parse(feedurl)
 		for entry in feed["entries"]:
 			# try to parse edit summary
 			summaryMatch = re.findall(r"^<p>(.+?)</p>", entry["summary"])

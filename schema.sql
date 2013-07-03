@@ -4,6 +4,7 @@ CREATE TABLE activities (
 	person TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
 	service TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
 	type TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+	account TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
 	content TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
 	url TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
 	UNIQUE (
@@ -14,4 +15,4 @@ CREATE TABLE activities (
 		content(165),
 		url(75)
 	)
-);
+) DEFAULT CHARSET=utf8;
