@@ -89,7 +89,14 @@ def getActivities():
 
 @app.route('/')
 def welcome():
-	return render_template('show_entries.html', entries=app.config['SERVICES'])
+	g.cursor.execute('SELECT DISTINCT service, account FROM `activities`')
+	accounts = { }
+	for (s, a) in g.cursor.fetchall():
+		if s in accounts:
+			accounts[s].append(a)
+		else:
+			accounts[s] = [a]
+	return render_template('show_entries.html', entries=app.config['SERVICES'], accounts=accounts)
 
 @app.route('/asl.json')
 def jsonOutput():

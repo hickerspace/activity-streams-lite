@@ -4,7 +4,6 @@ body {
 	margin: 0 auto;
 	padding-top: 20px;
 	font-family: "HelveticaNeueLight", "HelveticaNeue-Light", "Helvetica Neue Light", "HelveticaNeue", "Helvetica Neue", 'TeXGyreHerosRegular', "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
-	font-weight:300;
 	font-stretch:normal;
 }
 
@@ -30,14 +29,13 @@ h2 {
 }
 
 .services {
-	font-weight: bold;
 	width: 550px;
 	margin-top: 30px;
 }
 
 .services li {
 	float: left;
-	width: 260px;
+	width: 270px;
 	margin-bottom: 20px;
 }
 

@@ -29,15 +29,17 @@
 			</p>
 
 			<h2>Services and their corresponding Types</h2>
-			<ul class="services">
-			{% for service, types in entries.items() %}
-				<li>{{ service }}
-					<ul class="types">
-					{% for type in types %}
-						<li>{{ type }}</li>
-					{% endfor %}
-					</ul>
-				</li>
-			{% endfor %}
-			</ul>
+			<p>Available accounts for each service are listed in brackets.
+				<ul class="services">
+				{% for service, types in entries.items() %}
+					<li><b>{{ service }}</b> ({{ ", ".join(accounts[service]) }})
+						<ul class="types">
+						{% for type in types %}
+							<li>{{ type }}</li>
+						{% endfor %}
+						</ul>
+					</li>
+				{% endfor %}
+				</ul>
+			</p>
 {% endblock %}
