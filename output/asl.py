@@ -10,7 +10,7 @@ ORGANIZATION = ''
 SERVICES = {'wiki': ['activity'],
 			'github': ['push', 'create-repository', 'create-branch', 'fork', 'watch', 'member', \
 				'follow'],
-			'mailing-list': [ ],
+			'mailing-list': ['new-mail', 'new-subscriber'],
 			'twitter': ['tweet', 'retweet', 'reply', 'mention'],
 			'youtube': ['video', 'comment'],
 			'soup': ['post', 'notification'],
