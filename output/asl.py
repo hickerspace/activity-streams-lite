@@ -67,10 +67,8 @@ def getActivities():
 	for arg in request.args:
 		try:
 			count = arg.count(".")
-			# incomplete filters
-			if count == 0:
-				service, type_, account = (arg, "*", "*")
-			elif count == 1:
+			# incomplete filter
+			if count == 1:
 				service, type_ = arg.split(".")
 				account = "*"
 			else:
@@ -89,8 +87,8 @@ def getActivities():
 			continue
 
 	# build "select service/type" prepared statement
-	prepSelect = ['(service LIKE %s AND type LIKE %s AND account LIKE %s)']*(len(selected)/2)
-	deselect = ['NOT (service LIKE %s AND type LIKE %s AND account LIKE %s)']*(len(deselected)/2)
+	prepSelect = ['(service LIKE %s AND type LIKE %s AND account LIKE %s)']*(len(selected)/3)
+	deselect = ['NOT (service LIKE %s AND type LIKE %s AND account LIKE %s)']*(len(deselected)/3)
 
 	if prepSelect: wheres.append(' OR '.join(prepSelect))
 	if deselect: wheres.append(' AND '.join(deselect))
