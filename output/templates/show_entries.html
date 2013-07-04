@@ -5,27 +5,27 @@
 
 			<h2>Pagination & Save Points</h2>
 			<p>Add the <i>page</i> parameter to request the first/second/third/.. 30 activities.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?page=2">http://asl.hickerspace.org/asl.json?page=2</a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.atom?twitter.tweet&page=2">http://asl.hickerspace.org/asl.atom?twitter.tweet&page=2</a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?page=2">http://asl.hickerspace.org/asl.json?<b>page=2</b></a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.atom?twitter.tweet&page=2">http://asl.hickerspace.org/asl.atom?<b>twitter.tweet</b>&<b>page=2</b></a></blockquote>
 			</p>
 			<p>
 			If you want only new activities added since your last request, provide the <i>last_id</i> parameter. last_id should be the last activity you are aware of.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?last_id=170">http://asl.hickerspace.org/asl.json?last_id=170</a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.atom?mailing-list&last_id=188">http://asl.hickerspace.org/asl.atom?mailing-list&last_id=188</a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?last_id=170">http://asl.hickerspace.org/asl.json?<b>last_id=170</b></a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.atom?mailing-list&last_id=188">http://asl.hickerspace.org/asl.atom?<b>mailing-list</b>&<b>last_id=188</b></a></blockquote>
 			</p>
 
 			<h2>Filter</h2>
-			<p>Add (multiple) parameter(s) in this syntax: <i>service.type</i>.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?youtube.comment">http://asl.hickerspace.org/asl.json?youtube.comment</a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?youtube.comment&youtube.video">http://asl.hickerspace.org/asl.json?youtube.comment&youtube.video</a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.atom?soup.notification&soup.post">http://asl.hickerspace.org/asl.atom?soup.notification&soup.post</a></blockquote>
+			<p>Add (multiple) parameter(s) in this syntax: <i>service[.type[.account]]</i> (brackets mark optional parts).
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?youtube.comment">http://asl.hickerspace.org/asl.json?<b>youtube.comment</b></a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?youtube.comment&youtube.video">http://asl.hickerspace.org/asl.json?<b>youtube.comment</b>&<b>youtube.video</b></a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.atom?soup.notification&soup.post">http://asl.hickerspace.org/asl.atom?<b>soup.notification</b>&<b>soup.post</b></a></blockquote>
 			</p>
 			<p>Deselect service-type-combinations by putting a minus (-) in front of them.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?-youtube.comment">http://asl.hickerspace.org/asl.json?-youtube.comment</a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?-youtube.comment">http://asl.hickerspace.org/asl.json?<b>-youtube.comment</b></a></blockquote>
 			</p>
-			<p>Use asterisks (*) as type wildcards.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?github.*">http://asl.hickerspace.org/asl.json?github.*</a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?-youtube.*">http://asl.hickerspace.org/asl.json?-youtube.*</a></blockquote>
+			<p>Use asterisks (*) as type/accounts wildcards.
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?github.*.hickerspace">http://asl.hickerspace.org/asl.json?<b>github.*.hickerspace</b></a></blockquote>
+				<blockquote><a href="http://asl.hickerspace.org/asl.json?-twitter.*.hickernews">http://asl.hickerspace.org/asl.json?<b>-twitter.*.hickernews</b></a></blockquote>
 			</p>
 
 			<h2>Services and their corresponding Types</h2>

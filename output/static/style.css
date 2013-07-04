@@ -65,3 +65,7 @@ blockquote a {
 	font-weight: bold;
 	text-decoration: none;
 }
+
+blockquote a b {
+	color: #247B9E;
+}

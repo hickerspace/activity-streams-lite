@@ -66,17 +66,31 @@ def getActivities():
 	deselected = []
 	for arg in request.args:
 		try:
-			service, type_ = arg.split(".")
-			# accept % and * as wildcards
+			count = arg.count(".")
+			# incomplete filters
+			if count == 0:
+				service, type_, account = (arg, "*", "*")
+			elif count == 1:
+				service, type_ = arg.split(".")
+				account = "*"
+			else:
+				service, type_, account = arg.split(".")
+
+			# remove %
+			service, type_, account = [ x.replace("%", "") for x in (service, type_, account) ]
+
+			# accept only * as wildcards
 			if type_ == '*': type_ = '%'
-			if service[0] == "-": deselected += [service[1:], type_]
-			else: selected += [service, type_]
+			if account == '*': account = '%'
+
+			if service[0] == "-": deselected += [service[1:], type_, account]
+			else: selected += [service, type_, account]
 		except ValueError:
 			continue
 
 	# build "select service/type" prepared statement
-	prepSelect = ['(service LIKE %s AND type LIKE %s)']*(len(selected)/2)
-	deselect = ['NOT (service LIKE %s AND type LIKE %s)']*(len(deselected)/2)
+	prepSelect = ['(service LIKE %s AND type LIKE %s AND account LIKE %s)']*(len(selected)/2)
+	deselect = ['NOT (service LIKE %s AND type LIKE %s AND account LIKE %s)']*(len(deselected)/2)
 
 	if prepSelect: wheres.append(' OR '.join(prepSelect))
 	if deselect: wheres.append(' AND '.join(deselect))
