@@ -88,6 +88,8 @@ class TwitterHandler(base.BaseHandler):
 		self.insert(localDate, url, content, person)
 
 	def timeline(self, screenName):
+		# let insertStatus() decide which type
+		self.type_ = None
 		for status in self.api.user_timeline(screenName):
 			self.insertStatus(status)
 		self.updateStats("reply")
@@ -105,7 +107,7 @@ class TwitterHandler(base.BaseHandler):
 			withoutQuery.append("-from:%s" % screenName)
 
 		query = "%s %s" % (" OR ".join(withQuery), " ".join(withoutQuery))
-		print query
 		results = tweepy.Cursor(self.api.search, q=query).items()
 		for status in results:
 			self.insertStatus(status)
+
