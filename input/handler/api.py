@@ -11,6 +11,7 @@ data and insert it into the database.
 class ApiHandler(base.BaseHandler):
 	def __init__(self, dbConnection):
 		super(ApiHandler, self).__init__(dbConnection)
+		self.service = "sensor"
 
 	def api(self):
 		# pseudo method to get recognized
@@ -23,13 +24,14 @@ class ApiHandler(base.BaseHandler):
 		return response
 
 	def room(self):
+		self.type_ = "room"
 		status = self.apiCall("room")
 		since = datetime.fromtimestamp(long(status["since"]))
 		content = "Our room is %s." % status["roomStatus"]
-		self.insert(since, "sensor", "room", \
-			"https://hickerspace.org/wiki/Raumstatus", content)
+		self.insert(since, "https://hickerspace.org/wiki/Raumstatus", content)
 
 	def mateometer(self):
+		self.type_ = "mate-o-meter"
 		status = self.apiCall("mate-o-meter")
 		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
 
@@ -40,10 +42,10 @@ class ApiHandler(base.BaseHandler):
 		else:
 			content = "No bottles left."
 
-		self.insert(updated, "sensor", "mate-o-meter", \
-			"https://hickerspace.org/Mate-O-Meter", content)
+		self.insert(updated, "https://hickerspace.org/Mate-O-Meter", content)
 
 	def trafficlight(self):
+		self.type_ = "traffic-light"
 		status = self.apiCall("ampel")
 		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
 		colors = ["red", "yellow", "green"]
@@ -51,6 +53,5 @@ class ApiHandler(base.BaseHandler):
 		lights = [ "%s: %s" % (color, lightStatus[status[color]]) for color in colors ]
 		extendedInfo = "" if status["mode"] == "random" else " (%s)" % ", ".join(lights)
 		content = 'Traffic light mode switched to "%s"%s.' % (status["mode"], extendedInfo)
-		self.insert(updated, "sensor", "traffic-light", \
-			"https://hickerspace.org/wiki/Verkehrsampel", content)
+		self.insert(updated, "https://hickerspace.org/wiki/Verkehrsampel", content)
 

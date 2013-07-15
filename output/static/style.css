@@ -69,3 +69,23 @@ blockquote a {
 blockquote a b {
 	color: #247B9E;
 }
+
+.status {
+	background-color: #F7F7F7;
+	width: 550px;
+	border-collapse: collapse;
+}
+.status th {
+	background-color: #EBEBEB;
+}
+.status td {
+	border: 1px grey dashed;
+	padding: 0.2em;
+}
+
+.green {
+	color: #008000;
+}
+.red {
+	color: #CC0000;
+}

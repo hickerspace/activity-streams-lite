@@ -22,22 +22,23 @@ class FeedHandler(base.BaseHandler):
 		return re.sub('<[^<]+?>', '', htmlContent)
 
 	def github(self, organization, user, token):
+		self.service = "github"
 		url = "https://github.com/organizations/%s/%s.private.atom?token=%s" \
 			% (organization, user, token)
 
 		feed = self.parse(url)
 		for entry in feed["entries"]:
-			type = "activity"
+			self.type_ = "activity"
 			# try to get the specific event from the id
 			typeMatch = re.findall(r"^tag:github.com,2008:(.*?)Event/\d+$", entry["id"])
 			if typeMatch:
-				type = typeMatch[0].lower()
+				self.type_ = typeMatch[0].lower()
 				# try to add *what* got created
 				try:
 					createTypes = ["repository", "branch"]
 					createType = entry["title"].split()[2].lower()
-					if type == "create" and createType in createTypes:
-						type += "-%s" % createType
+					if self.type_ == "create" and createType in createTypes:
+						self.type_ += "-%s" % createType
 				except IndexError:
 					print "Could not extract extended create information."
 			# get summary
@@ -47,30 +48,35 @@ class FeedHandler(base.BaseHandler):
 			summary = "; ".join([ s.strip(" \n") for s in summaries ])
 			content = "%s: %s" % (entry["title"], summary) if summary else entry["title"]
 
-			self.insert(entry["updated_parsed"], "github", type, entry["link"],	content, \
+			self.insert(entry["updated_parsed"], entry["link"],	content, \
 				entry["author"])
 
 	def facebook(self, id):
+		self.service = "facebook"
+		self.type_ = "wall"
 		url = "http://www.facebook.com/feeds/page.php?format=atom10&id=%s" % id
 
 		feed = self.parse(url)
 		for entry in feed["entries"]:
 			cleanContent = self.stripHtml(entry["content"][0]["value"])
-			self.insert(entry["updated_parsed"], "facebook", "wall", \
-				entry["link"], cleanContent)
+			self.insert(entry["updated_parsed"], entry["link"], cleanContent)
 
 	def youtube(self, user):
 		url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % user \
 			+ "?alt=rss&v=2&orderby=published"
-		service = "youtube"
+		self.service = "youtube"
 
 		# get videos
+		self.type_ = "video"
 		feed = self.parse(url)
 		for entry in feed["entries"]:
-			self.insert(entry["updated_parsed"], service, "video", \
-				entry["link"], entry["title"])
+			self.insert(entry["updated_parsed"], entry["link"], entry["title"])
+
+		# update manually because posts *and* notifications get checked here
+		self.updateStats()
 
 		# get comments
+		self.type_ = "comment"
 		for entry in feed["entries"]:
 			id = re.findall(r"v=(.*)[&$]", entry["link"])[0]
 			title = entry["title"]
@@ -81,9 +87,11 @@ class FeedHandler(base.BaseHandler):
 			for commentEntry in commentFeed["entries"]:
 				content = 'Comment on "%s": %s' % (title, commentEntry["subtitle"])
 				author = commentEntry["author"]
-				self.insert(entry["updated_parsed"], service, "comment", link, content, author)
+				self.insert(entry["updated_parsed"], link, content, author)
 
 	def mediawiki(self, feedurl):
+		self.service = "wiki"
+		self.type_ = "activity"
 		feed = self.parse(feedurl)
 		for entry in feed["entries"]:
 			# try to parse edit summary
@@ -91,27 +99,31 @@ class FeedHandler(base.BaseHandler):
 			summary = ": %s" % self.stripHtml(summaryMatch[0]) if summaryMatch else ""
 			content = "%s%s" % (entry["title"], summary)
 
-			self.insert(entry["updated_parsed"], "wiki", "activity", entry["link"], \
+			self.insert(entry["updated_parsed"], entry["link"], \
 				content, entry["author"])
 
 	def soup(self, user, token):
 		accountRss = "http://%s.soup.io/rss" % user
 		notifyRss = "http://www.soup.io/notifications/%s.rss" % token
-		service = "soup"
+		self.service = "soup"
 
+		self.type_ = "post"
 		feedAcc = self.parse(accountRss)
 		for entry in feedAcc["entries"]:
 			attributes = json.loads(entry["soup_attributes"])
 			body = self.stripHtml(attributes["body"])
 			link = entry["links"][-1]["href"]
-			self.insert(entry["updated_parsed"], service, "post", link, body)
+			self.insert(entry["updated_parsed"], link, body)
 
+		# update manually because posts *and* notifications get checked here
+		self.updateStats()
+
+		self.type_ = "notification"
 		feedNotify = self.parse(notifyRss)
 		for entry in feedNotify["entries"]:
 			# skip maintenance messages
 			if entry["link"][:22] == "http://updates.soup.io": continue
 			authorMatches = re.findall(r"<span class=\"name\">(.+?)</span>", entry["summary"])
 			author = authorMatches[0] if authorMatches else ""
-			self.insert(entry["updated_parsed"], service, "notification", entry["link"], \
-				entry["title"], author)
+			self.insert(entry["updated_parsed"], entry["link"], entry["title"], author)
 

@@ -61,14 +61,14 @@ class TwitterHandler(base.BaseHandler):
 
 		return text
 
-	def insertStatus(self, status, type=None):
-		if not type:
+	def insertStatus(self, status):
+		if not self.type_:
 			if status.text[0] == "@":
-				type = "reply"
+				self.type_ = "reply"
 			elif status.text[:3] == "RT ":
-				type = "retweet"
+				self.type_ = "retweet"
 			else:
-				type = "tweet"
+				self.type_ = "tweet"
 
 		try:
 			author = status.author.screen_name
@@ -79,19 +79,24 @@ class TwitterHandler(base.BaseHandler):
 		content = self.expand(status.text)
 
 		source = "" if status.source == "web" else status.source
-		person = author if type == "mention" else source
+		person = author if self.type_ == "mention" else source
 
 		# convert UTC datetime to local datetime
 		date = status.created_at.replace(tzinfo=tz.tzutc())
 		localDate = date.astimezone(tz.tzlocal())
 
-		self.insert(localDate, self.service, type, url, content, person)
+		self.insert(localDate, url, content, person)
 
 	def timeline(self, screenName):
 		for status in self.api.user_timeline(screenName):
 			self.insertStatus(status)
+		self.updateStats("reply")
+		self.updateStats("retweet")
+		self.updateStats("tweet")
+
 
 	def mentions(self, screenNames):
+		self.type_ = "mention"
 		withQuery = []
 		withoutQuery = []
 		for screenName in screenNames:
@@ -100,7 +105,7 @@ class TwitterHandler(base.BaseHandler):
 			withoutQuery.append("-from:%s" % screenName)
 
 		query = "%s %s" % (" OR ".join(withQuery), " ".join(withoutQuery))
+		print query
 		results = tweepy.Cursor(self.api.search, q=query).items()
 		for status in results:
-			self.insertStatus(status, "mention")
-
+			self.insertStatus(status)

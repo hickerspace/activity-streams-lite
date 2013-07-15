@@ -4,7 +4,9 @@
 import MySQLdb
 from flask import Flask, request, render_template, g, jsonify
 from werkzeug.contrib.atom import AtomFeed
+from httpaccesscontrol import crossdomain
 from logger import log
+from datetime import datetime
 
 ORGANIZATION = ''
 SERVICES = {'wiki': ['activity'],
@@ -108,9 +110,16 @@ def welcome():
 			accounts[s].append(a)
 		else:
 			accounts[s] = [a]
-	return render_template('show_entries.html', entries=app.config['SERVICES'], accounts=accounts)
+	return render_template('home.html', entries=app.config['SERVICES'], accounts=accounts)
+
+@app.route('/status')
+def status():
+	g.cursor.execute('SELECT service, type, account, datetime, error FROM `last_update` ORDER BY service, type, account')
+	entries = [dict(service=row[0], type=row[1], account=row[2], datetime=int(round((datetime.now()-row[3]).seconds / 60)), error=row[4]) for row in g.cursor.fetchall()]
+	return render_template('status.html', entries=entries)
 
 @app.route('/asl.json')
+@crossdomain(origin='*')
 def jsonOutput():
 	entries = [dict(id=row[0], datetime=str(row[1]), person=row[2], \
 		service=row[3], type=row[4], account=row[5], content=row[6], url=row[7]) \
@@ -118,6 +127,7 @@ def jsonOutput():
 	return jsonify(results=entries)
 
 @app.route('/asl.atom')
+@crossdomain(origin='*')
 def atomOutput():
 	feed = AtomFeed('%s - Activity Streams Lite' % app.config['ORGANIZATION'], \
 		feed_url=request.url, url=request.url_root, subtitle='Syndicating %s activities' \

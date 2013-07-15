@@ -16,12 +16,26 @@ class BaseHandler(object):
 		self.cursor = dbConnection.cursor()
 		self.newRecords = 0
 		self.duplicateQueries = 0
+		self.service = None
+		self.type_ = None
 		self.account = None
 
 	def setAccount(self, account):
 		self.account = account
 
-	def insert(self, date, service, type, url="", content="", person=""):
+	def updateStats(self, type_=None):
+		if not type_:
+			type_ = self.type_
+		self.cursor.execute("INSERT INTO last_update (datetime, service, type, account, error) " \
+			+ "VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE datetime=VALUES(datetime), error=VALUES(error)", \
+			(datetime.now(), self.service, type_, self.account, False))
+
+	def setError(self):
+		self.cursor.execute("INSERT INTO last_update (service, type, account, error) VALUES " \
+			+ "(%s, %s, %s, %s) ON DUPLICATE KEY UPDATE error=VALUES(error)", (self.service, \
+			self.type_, self.account, True))
+
+	def insert(self, date, url="", content="", person=""):
 		if not self.account:
 			raise ValueError("No account set.")
 
@@ -39,7 +53,8 @@ class BaseHandler(object):
 		try:
 			self.cursor.execute("INSERT INTO activities (datetime, person, service, type, " \
 				+ "account, content, url) VALUES (%s, %s, %s, %s, %s, %s, %s)", (date, person, \
-				service, type, self.account, content, url))
+				self.service, self.type_, self.account, content, url))
+
 			self.newRecords += 1
 		except IntegrityError as e:
 			# duplicate entry

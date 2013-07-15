@@ -33,7 +33,7 @@ class ActivityScheduler(baseRunner.BaseRunner):
 		schedules = self.config._sections["schedule"]
 		del schedules["__name__"]
 		for methodName, schedule in schedules.items():
-			self.scheduler.add_cron_job(self.wrap, *schedule.split(), args=[methodName], misfire_grace_time=120)
+			self.scheduler.add_cron_job(self.wrap, *schedule.split(), args=[methodName], misfire_grace_time=120, name=methodName)
 
 if __name__ == '__main__':
 	ActivityScheduler()

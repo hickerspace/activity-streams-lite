@@ -17,12 +17,14 @@ class MailinglistHandler(base.BaseHandler):
 		super(MailinglistHandler, self).__init__(dbConnection)
 		self.subscriberFile = join(dirname(abspath(__file__)), \
 			"..%(sep)sdata%(sep)ssubscribers.json" % {"sep": sep})
+		self.service = "mailing-list"
 
 	def mailman(self):
 		# pseudo method to get recognized
 		pass
 
 	def posts(self, weburl, listname, loginmail="", loginpassword=""):
+		self.type_ = "new-mail"
 		auth = urllib.urlencode({"username": loginmail, "password": loginpassword})
 		# current and last month
 		dates = [datetime.now(), datetime.now() - relativedelta(months=1)]
@@ -59,10 +61,11 @@ class MailinglistHandler(base.BaseHandler):
 					mailDate = datetime.strptime(mailDate[0], "%a %b  %d %H:%M:%S %Z %Y")
 					locale.setlocale(locale.LC_TIME, '')
 
-					self.insert(mailDate, "mailing-list", "new-mail", mailUrl, \
-						"New mail on %s mailing list." % listname.title())
+					self.insert(mailDate, mailUrl, "New mail on %s mailing list." \
+						% listname.title())
 
 	def subscribers(self, weburl, listname, loginmail="", loginpassword=""):
+		self.type_ = "new-subscriber"
 		post = urllib.urlencode({"roster-email": loginmail, "roster-pw": loginpassword, "language": "en"})
 		request = urllib2.Request("%sroster/%s" % (weburl, listname), post)
 		subscribers = urllib2.urlopen(request).read()
@@ -79,8 +82,7 @@ class MailinglistHandler(base.BaseHandler):
 					diff = newSubscriberNum - oldSubscriberNums[listname]
 					content = "%d new subscribers" % diff if diff > 1 else "New subscriber"
 
-					self.insert(datetime.now(), "mailing-list", "new-subscriber", \
-						"%slistinfo/%s#subscribers" % (weburl, listname), \
+					self.insert(datetime.now(), "%slistinfo/%s#subscribers" % (weburl, listname), \
 						"%s on %s mailing list." % (content, listname.title()))
 		except IOError:
 			# file doesn't exist yet
