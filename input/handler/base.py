@@ -31,9 +31,9 @@ class BaseHandler(object):
 			(datetime.now(), self.service, type_, self.account, False))
 
 	def setError(self):
-		self.cursor.execute("INSERT INTO last_update (service, type, account, error) VALUES " \
-			+ "(%s, %s, %s, %s) ON DUPLICATE KEY UPDATE error=VALUES(error)", (self.service, \
-			self.type_, self.account, True))
+		self.cursor.execute("INSERT INTO last_update (datetime, service, type, account, error) VALUES " \
+			+ "(%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE error=VALUES(error)", \
+			(datetime(1970, 1, 1, 0, 0), self.service, self.type_, self.account, True))
 
 	def insert(self, date, url="", content="", person=""):
 		if not self.account:
