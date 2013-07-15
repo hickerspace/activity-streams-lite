@@ -2,17 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import MySQLdb, ConfigParser, logging
-from handler.feed import FeedHandler
-from handler.api import ApiHandler
-from handler.twitter import TwitterHandler
-from handler.mailinglist import MailinglistHandler
-
-HANDLER = [ FeedHandler, ApiHandler, TwitterHandler, MailinglistHandler ]
+from os.path import join, dirname
+from handler.base import BaseHandler
 
 class BaseRunner(object):
 	def __init__(self):
 		self.config = ConfigParser.SafeConfigParser()
-		self.config.read("config")
+		self.config.read(join(dirname(__file__), "config"))
 
 		# create a service-accounts-dictionary
 		self.accounts = dict((s, a.split(",")) for (s, a) in self.config._sections["accounts"].items())
@@ -23,9 +19,9 @@ class BaseRunner(object):
 			conf["databasename"], charset="utf8", use_unicode=True)
 
 	def callHandler(self, methodName, dbCon):
-		for h in HANDLER:
-			if callable(getattr(h, methodName, None)):
-				return h(dbCon)
+		for handler in BaseHandler.__subclasses__():
+			if callable(getattr(handler, methodName, None)):
+				return handler(dbCon)
 
 	def wrap(self, methodName):
 		con = self.newDbConnection()

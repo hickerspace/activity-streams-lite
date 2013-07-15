@@ -3,6 +3,7 @@
 
 from apscheduler.scheduler import Scheduler
 import baseRunner, time, logging
+from os.path import join, dirname
 
 class ActivityScheduler(baseRunner.BaseRunner):
 	def __init__(self):
@@ -11,6 +12,7 @@ class ActivityScheduler(baseRunner.BaseRunner):
 		conf = self.config._sections["logging"]
 		del conf["__name__"]
 		conf["level"] = int(conf["level"])
+		conf["filename"] = join(dirname(__file__), conf["filename"])
 		logging.basicConfig(**conf)
 
 		self.scheduler = Scheduler()

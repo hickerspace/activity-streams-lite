@@ -62,7 +62,7 @@ class TwitterHandler(base.BaseHandler):
 		return text
 
 	def insertStatus(self, status):
-		if not self.type_:
+		if not self.type_ or self.type == "tweet":
 			if status.text[0] == "@":
 				self.type_ = "reply"
 			elif status.text[:3] == "RT ":
@@ -89,7 +89,7 @@ class TwitterHandler(base.BaseHandler):
 
 	def timeline(self, screenName):
 		# let insertStatus() decide which type
-		self.type_ = None
+		self.type_ = "tweet"
 		for status in self.api.user_timeline(screenName):
 			self.insertStatus(status)
 		self.updateStats("reply")
