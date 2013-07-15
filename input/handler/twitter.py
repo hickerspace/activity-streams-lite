@@ -62,7 +62,7 @@ class TwitterHandler(base.BaseHandler):
 		return text
 
 	def insertStatus(self, status):
-		if not self.type_ or self.type_ == "tweet":
+		if not self.type_ or self.type_ != "mention":
 			if status.text[0] == "@":
 				self.type_ = "reply"
 			elif status.text[:3] == "RT ":
