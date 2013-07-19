@@ -3,24 +3,27 @@
 {% block body %}
 			<h2>Status</h2>
 			<br />
-			<p>
-				<table class="status">
-					<tr>
-						<th>Service</th>
-						<th>Type</th>
-						<th>Account</th>
-						<th>Last Update</th>
-					</tr>
-					{% for entry in entries %}
-					<tr>
-						<td>{{ entry.service.title() }}</td>
-						<td>{{ entry.type.title() }}</td>
-						<td><i>{{ entry.account.title() }}</i></td>
-						<td>{% if entry.error %}<span class="red">{% else %}<span class="green">{% endif %}{{ entry.datetime }}
-						{% if entry.datetime == 1 %} minute{% else %} minutes{% endif %} ago</span></td>
-					</tr>
-				{% endfor %}
-				</table>
-			</p>
+			<table class="status">
+				<tr>
+					<th>Service</th>
+					<th>Type</th>
+					<th>Account</th>
+					<th>Last Update</th>
+				</tr>
+				{% for entry in entries %}
+				<tr>
+					<td>{{ entry.service.title() }}</td>
+					<td>{{ entry.type.title() }}</td>
+					<td><i>{{ entry.account.title() }}</i></td>
+					<td>{% if entry.error %}<span class="red">{% else %}<span class="green">{% endif %}{{ entry.datetime }}
+					{% if entry.datetime == 1 %} minute{% else %} minutes{% endif %} ago</span></td>
+				</tr>
+			{% endfor %}
+			{% if not entries %}
+				<tr>
+					<td colspan="4" style="text-align: center;">No stats collected yet.</td>
+				</tr>
+			{% endif %}
+			</table>
 			<a href="{{ url_for('welcome') }}">&lt; Home</a>
 {% endblock %}

@@ -4,45 +4,41 @@
 			<p>Get our activities as <a href="{{ url_for('jsonOutput') }}">JSON</a> or <a href="{{ url_for('atomOutput') }}">Atom</a>.</p>
 
 			<h2>Pagination & Save Points</h2>
-			<p>Add the <i>page</i> parameter to request the first/second/third/.. 30 activities.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?page=2">http://asl.hickerspace.org/asl.json?<b>page=2</b></a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.atom?twitter.tweet&page=2">http://asl.hickerspace.org/asl.atom?<b>twitter.tweet</b>&<b>page=2</b></a></blockquote>
-			</p>
-			<p>
-			If you want only new activities added since your last request, provide the <i>last_id</i> parameter. last_id should be the last activity you are aware of.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?last_id=170">http://asl.hickerspace.org/asl.json?<b>last_id=170</b></a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.atom?mailing-list&last_id=188">http://asl.hickerspace.org/asl.atom?<b>mailing-list</b>&<b>last_id=188</b></a></blockquote>
-			</p>
+			<p>Add the <i>page</i> parameter to request the first/second/third/.. 30 activities.</p>
+			<blockquote><a href="{{ url_for('jsonOutput') }}?page=2">{{ url_for('jsonOutput', _external=True) }}?<b>page=2</b></a></blockquote>
+			<blockquote><a href="{{ url_for('atomOutput') }}?twitter.tweet&amp;page=2">{{ url_for('atomOutput', _external=True) }}?<b>twitter.tweet</b>&<b>page=2</b></a></blockquote>
+
+			<p>If you want only new activities added since your last request, provide the <i>last_id</i> parameter. last_id should be the last activity you are aware of.</p>
+			<blockquote><a href="{{ url_for('jsonOutput') }}?last_id=170">{{ url_for('jsonOutput', _external=True) }}?<b>last_id=170</b></a></blockquote>
+			<blockquote><a href="{{ url_for('atomOutput') }}?mailing-list&amp;last_id=188">{{ url_for('atomOutput', _external=True) }}?<b>mailing-list</b>&<b>last_id=188</b></a></blockquote>
 
 			<h2>Filter</h2>
-			<p>Add (multiple) parameter(s) in this syntax: <i>service.type[.account]</i> (brackets mark optional parts).
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?youtube.comment">http://asl.hickerspace.org/asl.json?<b>youtube.comment</b></a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?youtube.comment&youtube.video">http://asl.hickerspace.org/asl.json?<b>youtube.comment</b>&<b>youtube.video</b></a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.atom?soup.notification&soup.post">http://asl.hickerspace.org/asl.atom?<b>soup.notification</b>&<b>soup.post</b></a></blockquote>
-			</p>
-			<p>Deselect service-type-combinations by putting a minus (-) in front of them.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?-youtube.comment">http://asl.hickerspace.org/asl.json?<b>-youtube.comment</b></a></blockquote>
-			</p>
-			<p>Use asterisks (*) as type/accounts wildcards.
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?github.*.hickerspace">http://asl.hickerspace.org/asl.json?<b>github.*.hickerspace</b></a></blockquote>
-				<blockquote><a href="http://asl.hickerspace.org/asl.json?-twitter.*.hickernews">http://asl.hickerspace.org/asl.json?<b>-twitter.*.hickernews</b></a></blockquote>
-			</p>
+			<p>Add (multiple) parameter(s) in this syntax: <i>service.type[.account]</i> (brackets mark optional parts).</p>
+			<blockquote><a href="{{ url_for('jsonOutput') }}?youtube.comment">{{ url_for('jsonOutput', _external=True) }}?<b>youtube.comment</b></a></blockquote>
+			<blockquote><a href="{{ url_for('jsonOutput') }}?youtube.comment&amp;youtube.video">{{ url_for('jsonOutput', _external=True) }}?<b>youtube.comment</b>&<b>youtube.video</b></a></blockquote>
+			<blockquote><a href="{{ url_for('atomOutput') }}?soup.notification&amp;soup.post">{{ url_for('atomOutput', _external=True) }}?<b>soup.notification</b>&<b>soup.post</b></a></blockquote>
+
+			<p>Deselect service-type-combinations by putting a minus (-) in front of them.</p>
+			<blockquote><a href="{{ url_for('jsonOutput') }}?-youtube.comment">{{ url_for('jsonOutput', _external=True) }}?<b>-youtube.comment</b></a></blockquote>
+
+			<p>Use asterisks (*) as type/accounts wildcards.</p>
+			<blockquote><a href="{{ url_for('jsonOutput') }}?github.*.hickerspace">{{ url_for('jsonOutput', _external=True) }}?<b>github.*.hickerspace</b></a></blockquote>
+			<blockquote><a href="{{ url_for('jsonOutput') }}?-twitter.*.hickernews">{{ url_for('jsonOutput', _external=True) }}?<b>-twitter.*.hickernews</b></a></blockquote>
 
 			<h2>Status</h2>
 			<p>Check the status of our last service requests at our <a href="{{ url_for('status') }}">status page</a>.</p>
 
 			<h2>Services and their corresponding Types</h2>
-			<p>Available accounts for each service are listed in brackets.
-				<ul class="services">
-				{% for service, types in entries.items() %}
-					<li><b>{{ service }}</b> ({{ ", ".join(accounts[service]) }})
-						<ul class="types">
-						{% for type in types %}
-							<li>{{ type }}</li>
-						{% endfor %}
-						</ul>
-					</li>
-				{% endfor %}
-				</ul>
-			</p>
+			<p>Available accounts for each service are listed in brackets.</p>
+			<ul class="services">
+			{% for service, types in entries.items() %}
+				<li><b>{{ service }}</b> ({{ ", ".join(accounts[service]) }})
+					<ul class="types">
+					{% for type in types %}
+						<li>{{ type }}</li>
+					{% endfor %}
+					</ul>
+				</li>
+			{% endfor %}
+			</ul>
 {% endblock %}
