@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import base, feedparser, re, json
+import base, feedparser, re, json, socket
 from lxml import etree
 
 """
@@ -10,6 +10,7 @@ FeedHandler parses feeds and inserts particular parts into the database.
 class FeedHandler(base.BaseHandler):
 	def __init__(self, dbConnection):
 		super(FeedHandler, self).__init__(dbConnection)
+		socket.setdefaulttimeout(10)
 
 	def parse(self, url):
 		feed = feedparser.parse(url)
