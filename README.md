@@ -4,7 +4,7 @@ Activity Streams Lite
 Syndicating Hickerspace activities from different sources like GitHub, YouTube, Facebook and many more.
 This project is based on the idea of [Activity Streams](http://activitystrea.ms/).
 
-Configure db access, private tokens and other credentials in `config`.
+Configure db access, private tokens and other credentials in `config`. See `config.sample` for inspiration.
 
 Execute `activityScheduler.py` to start.
 

@@ -53,10 +53,10 @@ class FeedHandler(base.BaseHandler):
 				entry["author"])
 			self.updateStats(allTypes=True)
 
-	def facebook(self, id_):
+	def facebook(self, id):
 		self.service = "facebook"
 		self.type_ = "wall"
-		url = "http://www.facebook.com/feeds/page.php?format=atom10&id=%s" % id_
+		url = "http://www.facebook.com/feeds/page.php?format=atom10&id=%s" % id
 
 		feed = self.parse(url)
 		for entry in feed["entries"]:
