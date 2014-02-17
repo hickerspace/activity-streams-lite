@@ -15,9 +15,14 @@ class TwitterHandler(base.BaseHandler):
 		self.expandedUrls = join(dirname(abspath(__file__)), \
 			"..%(sep)sdata%(sep)sexpanded_urls.json" % {"sep": sep})
 
-	def twitter(self):
-		# pseudo method to get recognized
-		pass
+	def twitter(self, **args):
+		try:
+			self.auth(**args)
+			self.do(self.timeline)
+			self.do(self.mentions)
+		except Exception as e:
+			# auth failed (other exceptions caught by self.do() )
+			self.logError(e)
 
 	def auth(self, consumerkey, consumersecret, accesstoken, accesstokensecret):
 		# create Twitter connection
@@ -31,7 +36,7 @@ class TwitterHandler(base.BaseHandler):
 
 		try:
 			target = h.request(url, 'HEAD')[0]['location']
-		except (KeyError, httplib2.SSLHandshakeError):
+		except (KeyError, httplib2.SSLHandshakeError, UnicodeError):
 			target = url
 
 		with open(self.expandedUrls, 'w') as f:
@@ -87,27 +92,28 @@ class TwitterHandler(base.BaseHandler):
 
 		self.insert(localDate, url, content, person)
 
-	def timeline(self, screenName):
+	def timeline(self):
 		# let insertStatus() decide which type
 		self.type_ = "tweet"
-		for status in self.api.user_timeline(screenName):
+		for status in self.api.user_timeline(self.account):
 			self.insertStatus(status)
-		self.updateStats("reply")
-		self.updateStats("retweet")
-		self.updateStats("tweet")
+		self.updateStats(allTypes=True)
 
-
-	def mentions(self, screenNames):
+	def mentions(self):
 		self.type_ = "mention"
 		withQuery = []
 		withoutQuery = []
-		for screenName in screenNames:
+		# iterate through screen names
+		for screenName in self.accounts:
 			withQuery.append("@%s" % screenName)
 			withQuery.append(screenName)
 			withoutQuery.append("-from:%s" % screenName)
 
 		query = "%s %s" % (" OR ".join(withQuery), " ".join(withoutQuery))
+
 		results = tweepy.Cursor(self.api.search, q=query).items()
 		for status in results:
 			self.insertStatus(status)
 
+		for status in tweepy.Cursor(self.api.mentions_timeline).items():
+			self.insertStatus(status)

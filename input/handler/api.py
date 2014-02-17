@@ -14,8 +14,9 @@ class ApiHandler(base.BaseHandler):
 		self.service = "sensor"
 
 	def api(self):
-		# pseudo method to get recognized
-		pass
+		self.do(self.room)
+		self.do(self.mateometer)
+		self.do(self.trafficlight)
 
 	def apiCall(self, resource):
 		apiUrl = "https://hickerspace.org/api/%s" % resource

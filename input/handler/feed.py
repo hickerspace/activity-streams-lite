@@ -16,7 +16,7 @@ class FeedHandler(base.BaseHandler):
 		feed = feedparser.parse(url)
 		if feed["bozo"]:
 			level = "Warning" if feed["entries"] else "Error"
-			print "Feed %s: %s (%s)" % (level, feed["bozo_exception"], url)
+			self.log("Feed %s: %s (%s)" % (level, feed["bozo_exception"], url))
 		return feed
 
 	def stripHtml(self, htmlContent):
@@ -32,7 +32,7 @@ class FeedHandler(base.BaseHandler):
 			self.type_ = "activity"
 			# try to get the specific event from the id
 			typeMatch = re.findall(r"^tag:github.com,2008:(.*?)Event/\d+$", entry["id"])
-			if typeMatch:
+			if typeMatch and typeMatch[0]:
 				self.type_ = typeMatch[0].lower()
 				# try to add *what* got created
 				try:
@@ -40,8 +40,8 @@ class FeedHandler(base.BaseHandler):
 					createType = entry["title"].split()[2].lower()
 					if self.type_ == "create" and createType in createTypes:
 						self.type_ += "-%s" % createType
-				except IndexError:
-					print "Could not extract extended create information."
+				except IndexError as e:
+					self.log("Could not extract extended create information.")
 			# get summary
 			parser = etree.HTMLParser()
 			tree = etree.fromstring(entry["content"][0]["value"], parser)
@@ -51,11 +51,12 @@ class FeedHandler(base.BaseHandler):
 
 			self.insert(entry["updated_parsed"], entry["link"],	content, \
 				entry["author"])
+			self.updateStats(allTypes=True)
 
-	def facebook(self, id):
+	def facebook(self, id_):
 		self.service = "facebook"
 		self.type_ = "wall"
-		url = "http://www.facebook.com/feeds/page.php?format=atom10&id=%s" % id
+		url = "http://www.facebook.com/feeds/page.php?format=atom10&id=%s" % id_
 
 		feed = self.parse(url)
 		for entry in feed["entries"]:

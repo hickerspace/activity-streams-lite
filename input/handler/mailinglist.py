@@ -7,6 +7,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from os.path import dirname, abspath, join
 from os import sep
+import logging
 
 """
 MailinglistHandler provides a method that scrapes mailman archives and detects mails of current
@@ -19,11 +20,11 @@ class MailinglistHandler(base.BaseHandler):
 			"..%(sep)sdata%(sep)ssubscribers.json" % {"sep": sep})
 		self.service = "mailing-list"
 
-	def mailman(self):
-		# pseudo method to get recognized
-		pass
+	def mailman(self, **args):
+		self.do(self.posts, **args)
+		self.do(self.subscribers, **args)
 
-	def posts(self, weburl, listname, loginmail="", loginpassword=""):
+	def posts(self, weburl, listname, language, loginmail="", loginpassword=""):
 		self.type_ = "new-mail"
 		auth = urllib.urlencode({"username": loginmail, "password": loginpassword})
 		# current and last month
@@ -56,17 +57,26 @@ class MailinglistHandler(base.BaseHandler):
 				mailDate = mailTree.xpath('/html/body/i/text()')
 
 				if mailDate:
-					# convert string to datetime
-					locale.setlocale(locale.LC_TIME, 'C')
-					mailDate = datetime.strptime(mailDate[0], "%a %b  %d %H:%M:%S %Z %Y")
-					locale.setlocale(locale.LC_TIME, '')
+					mailDate = mailDate[0].replace("  ", " ")
+					try:
+						mailDate = self.strToDatetime(mailDate, language)
+					except ValueError:
+						mailDate = self.strToDatetime(mailDate)
 
 					self.insert(mailDate, mailUrl, "New mail on %s mailing list." \
 						% listname.title())
 
-	def subscribers(self, weburl, listname, loginmail="", loginpassword=""):
+	def strToDatetime(self, dateStr, language='C'):
+		# convert string to datetime
+		locale.setlocale(locale.LC_TIME, language)
+		mailDate = datetime.strptime(dateStr, "%a %b %d %H:%M:%S %Z %Y")
+		locale.setlocale(locale.LC_TIME, '')
+		return mailDate
+
+
+	def subscribers(self, weburl, listname, language, loginmail="", loginpassword=""):
 		self.type_ = "new-subscriber"
-		post = urllib.urlencode({"roster-email": loginmail, "roster-pw": loginpassword, "language": "en"})
+		post = urllib.urlencode({"roster-email": loginmail, "roster-pw": loginpassword})
 		request = urllib2.Request("%sroster/%s" % (weburl, listname), post)
 		subscribers = urllib2.urlopen(request).read()
 		parser = etree.HTMLParser()

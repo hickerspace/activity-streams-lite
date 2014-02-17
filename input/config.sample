@@ -1,8 +1,8 @@
 [database]
-host: 
-databasename: 
-username: 
-password: 
+host: localhost
+databasename: asl
+username: asl
+password: some-pw
 
 [logging]
 # Log levels: DEBUG (10), INFO (20), WARNING (30), ERROR (40), CRITICAL (50)
@@ -26,56 +26,63 @@ api: * * * * * * */2
 [accounts]
 # Set account names for the services you scheduled and create a corresponding section
 # [service_accountname] below. Multiple accounts should be comma-separated.
-twitter: 
-github: 
-facebook: 
-youtube: 
-mediawiki: 
-soup: 
-mailman: 
-api: 
+twitter:hickernews,hickerspace
+github:hickerspace
+facebook:hickerspace
+youtube:hickerspace
+mediawiki:hickerspace
+soup:hickerspace
+mailman:hickerspace
+api:hickerspace
 
-[twitter_sample]
+[twitter_hickernews]
 # (Create an app on http://dev.twitter.com/)
-consumerKey: 
-consumerSecret: 
-accessToken: 
-accessTokenSecret: 
+consumerKey: some-consumer-key
+consumerSecret: some-consumer-secret
+accessToken: some-access-token
+accessTokenSecret: some-access-token-secret
 
-[github_sample]
+[twitter_hickerspace]
+# (Create an app on http://dev.twitter.com/)
+consumerKey: some-consumer-key
+consumerSecret: some-consumer-secret
+accessToken: some-consumer-token
+accessTokenSecret: some-access-token-secret
+
+[github_hickerspace]
 # Provide name of your organziation, a user who is member of it and the user token.
 # Switch to organization context, click on "News Feed" and copy the token:
 # https://github.com/organizations/hickerspace/basti2342.private.atom?token=THIS_IS_THE_TOKEN
-organization: 
-user: 
-token: 
+organization: hickerspace
+user: basti2342
+token: some-token
 
-[facebook_sample]
+[facebook_hickerspace]
 # Get link of logo and copy the ID:
 # http://www.facebook.com/photo.php?fbid=148687508557226&set=a.148684541890856.33197.THIS_IS_THE_ID&type=1&source=11
-id: 
+id: some-id
 
-[youtube_sample]
+[youtube_hickerspace]
 # Provide your account name
-user: 
+user: hickerspace
 
 [mediawiki_hickerspace]
 # Provide the Recent Changes atom feed.
-feedurl: 
+feedurl: http://hickerspace.org/w/index.php?title=Special:RecentChanges&feed=atom
 
 [soup_hickerspace]
 # Go to http://www.soup.io/notifications, click on "RSS-Feed" an copy the token:
 # http://www.soup.io/notifications/THIS_IS_THE_TOKEN.rss
-user: 
-token: 
+user: hickerspace
+token: some-token
 
 [mailman_hickerspace]
-# Provide list name and url to webinterface (without list name etc; with tailing slash)
+# Provide list names and url to webinterface (without list names etc)
 # In case of protected archives enter credentials of a subscribed user (must be subscribed on all lists)
 # (E.g. create a new user and disable mail delivery)
-# Language is the locale string representation of the default list language
-listname: 
-weburl: 
-loginmail: 
-loginpassword: 
-language: 
+listname: hickerspace ; use comma seperation for several items
+weburl: https://hickerspace.org/mailman/
+loginmail: activity-streams@example.com
+loginpassword: some-pw
+language: de_DE.UTF-8
+

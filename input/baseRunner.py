@@ -23,6 +23,14 @@ class BaseRunner(object):
 			if callable(getattr(handler, methodName, None)):
 				return handler(dbCon)
 
+	def handleError(self, e, obj, methodName, account):
+		if isinstance(e, (UnboundLocalError)):
+			logging.error("No config section found: %s_%s" % (methodName, account))
+		else:
+			obj.setError()
+			logging.error("%s: %s" % (e.__class__.__name__, e))
+
+
 	def wrap(self, methodName):
 		con = self.newDbConnection()
 		obj = self.callHandler(methodName, con)
@@ -35,38 +43,20 @@ class BaseRunner(object):
 				# no config section found (normal in case method needs no arguments)
 				pass
 
-			obj.setAccount(account)
+			obj.account = account
+			obj.accounts = self.accounts[methodName]
+
 			try:
-				if methodName == "api":
-					obj.room()
-					obj.updateStats()
-					obj.mateometer()
-					obj.updateStats()
-					obj.trafficlight()
-				elif methodName == "twitter":
-					obj.auth(**conf)
-					obj.timeline(account)
-					obj.updateStats()
-					obj.mentions(self.accounts[methodName])
-				elif methodName == "mailman":
-					obj.posts(**conf)
-					obj.updateStats()
-					obj.subscribers(**conf)
-				else:
-					getattr(obj, methodName)(**conf)
-
-				# reached this point so everything seems to be ok
-				obj.updateStats()
-
+				try:
+					obj.do(getattr(obj, methodName), **conf)
+				except UnboundLocalError:
+					obj.do(getattr(obj, methodName))
 			except UnboundLocalError:
 				logging.error("No config section found: %s_%s" % (methodName, account))
-			except Exception as e:
-				obj.setError()
-				raise e
 
 		# close cursor
 		obj.close()
 		# close db connection
 		con.close()
-		logging.info("%s: %s" % (methodName, obj.status()))
+		logging.info("%s - %s" % (methodName, obj.status()))
 
