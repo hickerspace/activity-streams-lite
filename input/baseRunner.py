@@ -30,7 +30,6 @@ class BaseRunner(object):
 			obj.setError()
 			logging.error("%s: %s" % (e.__class__.__name__, e))
 
-
 	def wrap(self, methodName):
 		con = self.newDbConnection()
 		obj = self.callHandler(methodName, con)

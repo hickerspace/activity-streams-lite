@@ -69,10 +69,9 @@ class MailinglistHandler(base.BaseHandler):
 	def strToDatetime(self, dateStr, language='C'):
 		# convert string to datetime
 		locale.setlocale(locale.LC_TIME, language)
-		mailDate = datetime.strptime(dateStr, "%a %b %d %H:%M:%S %Z %Y")
+		mailDate = datetime.strptime(dateStr.encode("utf-8"), "%a %b %d %H:%M:%S %Z %Y")
 		locale.setlocale(locale.LC_TIME, '')
 		return mailDate
-
 
 	def subscribers(self, weburl, listname, language, loginmail="", loginpassword=""):
 		self.type_ = "new-subscriber"

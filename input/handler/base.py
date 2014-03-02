@@ -102,3 +102,4 @@ class BaseHandler(object):
 
 	def status(self):
 		return "%d new record(s); %d duplicate(s)" % (self.newRecords, self.duplicateQueries)
+
