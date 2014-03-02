@@ -10,7 +10,7 @@
 
 			<p>If you want only new activities added since your last request, provide the <i>last_id</i> parameter. last_id should be the last activity you are aware of.</p>
 			<blockquote><a href="{{ url_for('jsonOutput') }}?last_id=170">{{ url_for('jsonOutput', _external=True) }}?<b>last_id=170</b></a></blockquote>
-			<blockquote><a href="{{ url_for('atomOutput') }}?mailing-list&amp;last_id=188">{{ url_for('atomOutput', _external=True) }}?<b>mailing-list</b>&<b>last_id=188</b></a></blockquote>
+			<blockquote><a href="{{ url_for('atomOutput') }}?wiki.activity&amp;last_id=188">{{ url_for('atomOutput', _external=True) }}?<b>wiki.activity</b>&<b>last_id=188</b></a></blockquote>
 
 			<h2>Filter</h2>
 			<p>Add (multiple) parameter(s) in this syntax: <i>service.type[.account]</i> (brackets mark optional parts).</p>
