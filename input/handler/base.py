@@ -13,15 +13,23 @@ The database connection must be established before.
 """
 class BaseHandler(object):
 	def __init__(self, dbConnection):
+		# db cursor
 		self.cursor = dbConnection.cursor()
+		# count new db rows
 		self.newRecords = 0
+		# count rows already there
 		self.duplicateQueries = 0
+		# the service we're handling right now
 		self.service = None
+		# type (like new repo, new commit in case of GitHub)
 		self.type_ = None
+		# the account we're handling right now
 		self.account = None
+		# other accounts we have for this service
 		self.accounts = []
 
 	def updateStats(self, type_=None, allTypes=False):
+		# this method updates the last_update table which feeds the Flask status page
 		if not type_:
 			type_ = self.type_
 
@@ -32,13 +40,17 @@ class BaseHandler(object):
 			types = [type_]
 
 		for t in types:
-			self.cursor.execute("INSERT INTO last_update (datetime, service, type, account, error) " \
-				+ "VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE datetime=VALUES(datetime), error=VALUES(error)", \
-				(datetime.now(), self.service, t, self.account, False))
+			self.cursor.execute("INSERT INTO last_update (datetime, service, " \
+				+ "type, account, error) VALUES (%s, %s, %s, %s, %s) ON " \
+				+ "DUPLICATE KEY UPDATE datetime=VALUES(datetime), " \
+				+ "error=VALUES(error)", (datetime.now(), self.service, t, \
+				self.account, False))
 
 	def __getNotUpdatedTypes(self):
+		# returns types that have not been updated in the last 60 seconds
 		types = []
-		self.cursor.execute("SELECT type, datetime FROM last_update WHERE service = %s", (self.service,))
+		self.cursor.execute("SELECT type, datetime FROM last_update WHERE " \
+			+ "service = %s", (self.service,))
 		for type_, date in self.cursor:
 			if date < datetime.now() - timedelta(seconds=60):
 				types.append(type_)
@@ -46,10 +58,14 @@ class BaseHandler(object):
 
 
 	def setError(self):
+		# mark not recently updated types and use dummy date (because we do
+		# not have a better guess)
 		for type_ in self.__getNotUpdatedTypes():
-			self.cursor.execute("INSERT INTO last_update (datetime, service, type, account, error)" \
-				+ " VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE error=VALUES(error)", \
-				(datetime(1970, 1, 1, 0, 0), self.service, type_, self.account, True))
+			self.cursor.execute("INSERT INTO last_update (datetime, service, " \
+				+ "type, account, error) VALUES (%s, %s, %s, %s, %s) ON " \
+				+ "DUPLICATE KEY UPDATE error=VALUES(error)", \
+				(datetime(1970, 1, 1, 0, 0), self.service, type_, \
+				self.account, True))
 
 	def insert(self, date, url="", content="", person=""):
 		if not self.account:
@@ -63,13 +79,15 @@ class BaseHandler(object):
 		else:
 			raise TypeError("Unknown date format.")
 
-		# remove multiple spaces
+		# remove multiple spaces in content
 		content = re.sub('\s{2,}', ' ', content)
 
 		try:
-			self.cursor.execute("INSERT INTO activities (datetime, person, service, type, " \
-				+ "account, content, url) VALUES (%s, %s, %s, %s, %s, %s, %s)", (date, person, \
-				self.service, self.type_, self.account, content, url))
+			# insert activity into table
+			self.cursor.execute("INSERT INTO activities (datetime, person, " \
+				"service, type, account, content, url) VALUES (%s, %s, %s, " \
+				"%s, %s, %s, %s)", (date, person, self.service, self.type_, \
+				self.account, content, url))
 
 			self.newRecords += 1
 		except IntegrityError as e:
@@ -78,12 +96,15 @@ class BaseHandler(object):
 				self.duplicateQueries += 1
 			else:
 				self.log("Last SQL statement: %s" % self.cursor._last_executed)
+				# this will be caught somewhere else
 				raise e
 
 	def utcStruct2localDatetime(self, timeTuple):
 		return datetime.fromtimestamp(timegm(timeTuple))
 
 	def do(self, method, **args):
+		# wrapper method that calls the method, updates the status and does
+		# error handling/logging
 		try:
 			method(**args)
 			self.updateStats()
@@ -101,5 +122,6 @@ class BaseHandler(object):
 		self.cursor.close()
 
 	def status(self):
+		# status message for logging purposes
 		return "%d new record(s); %d duplicate(s)" % (self.newRecords, self.duplicateQueries)
 

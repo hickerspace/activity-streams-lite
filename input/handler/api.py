@@ -5,8 +5,8 @@ import base, urllib, urllib2, json
 from datetime import datetime
 
 """
-ApiHandler implements a generic way to poll data from our API. Additional methods poll
-data and insert it into the database.
+ApiHandler implements a generic way to poll data from our API. Additional
+methods poll data and insert it into the database.
 """
 class ApiHandler(base.BaseHandler):
 	def __init__(self, dbConnection):
@@ -14,11 +14,13 @@ class ApiHandler(base.BaseHandler):
 		self.service = "sensor"
 
 	def api(self):
+		# call ALL the api methods
 		self.do(self.room)
 		self.do(self.mateometer)
 		self.do(self.trafficlight)
 
 	def apiCall(self, resource):
+		# returns result of a given api method
 		apiUrl = "https://hickerspace.org/api/%s" % resource
 		request = urllib2.Request(apiUrl)
 		response = json.load(urllib2.urlopen(request))
@@ -36,6 +38,7 @@ class ApiHandler(base.BaseHandler):
 		status = self.apiCall("mate-o-meter")
 		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
 
+		# human readable status
 		if status["bottles"] > 1:
 			content = "%d bottles left." % status["bottles"]
 		elif status["bottles"] == 1:
@@ -49,10 +52,17 @@ class ApiHandler(base.BaseHandler):
 		self.type_ = "traffic-light"
 		status = self.apiCall("ampel")
 		updated = datetime.fromtimestamp(long(status["lastUpdate"]))
+
+		# human readable status
 		colors = ["red", "yellow", "green"]
 		lightStatus = { True: "on", False: "off" }
-		lights = [ "%s: %s" % (color, lightStatus[status[color]]) for color in colors ]
-		extendedInfo = "" if status["mode"] == "random" else " (%s)" % ", ".join(lights)
-		content = 'Traffic light mode switched to "%s"%s.' % (status["mode"], extendedInfo)
-		self.insert(updated, "https://hickerspace.org/wiki/Verkehrsampel", content)
+		lights = [ "%s: %s" % (color, lightStatus[status[color]]) for color \
+			in colors ]
+		extendedInfo = "" if status["mode"] == "random" else " (%s)" \
+			% ", ".join(lights)
+		content = 'Traffic light mode switched to "%s"%s.' % (status["mode"], \
+			extendedInfo)
+
+		self.insert(updated, "https://hickerspace.org/wiki/Verkehrsampel", \
+			content)
 

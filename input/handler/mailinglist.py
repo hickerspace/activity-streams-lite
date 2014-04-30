@@ -21,6 +21,7 @@ class MailinglistHandler(base.BaseHandler):
 		self.service = "mailing-list"
 
 	def mailman(self, **args):
+		# call ALL the mailman methods
 		self.do(self.posts, **args)
 		self.do(self.subscribers, **args)
 
