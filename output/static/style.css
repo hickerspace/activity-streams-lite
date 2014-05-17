@@ -70,6 +70,11 @@ blockquote a b {
 	color: #247B9E;
 }
 
+.notation {
+	font-family: 'Courier New';
+	font-weight: bold;
+}
+
 .status {
 	background-color: #F7F7F7;
 	width: 550px;

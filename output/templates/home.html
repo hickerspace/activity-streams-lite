@@ -13,7 +13,7 @@
 			<blockquote><a href="{{ url_for('atomOutput') }}?wiki.activity&amp;last_id=188">{{ url_for('atomOutput', _external=True) }}?<b>wiki.activity</b>&<b>last_id=188</b></a></blockquote>
 
 			<h2>Filter</h2>
-			<p>Add (multiple) parameter(s) in this syntax: <i>service.type[.account]</i> (brackets mark optional parts).</p>
+			<p>Add (multiple) parameter(s) in this syntax:<br /><span class="notation">service.type[.account]</span> (brackets mark optional parts).</p>
 			<blockquote><a href="{{ url_for('jsonOutput') }}?youtube.comment">{{ url_for('jsonOutput', _external=True) }}?<b>youtube.comment</b></a></blockquote>
 			<blockquote><a href="{{ url_for('jsonOutput') }}?youtube.comment&amp;youtube.video">{{ url_for('jsonOutput', _external=True) }}?<b>youtube.comment</b>&<b>youtube.video</b></a></blockquote>
 			<blockquote><a href="{{ url_for('atomOutput') }}?soup.notification&amp;soup.post">{{ url_for('atomOutput', _external=True) }}?<b>soup.notification</b>&<b>soup.post</b></a></blockquote>
@@ -21,7 +21,7 @@
 			<p>Deselect service-type-combinations by putting a minus (-) in front of them.</p>
 			<blockquote><a href="{{ url_for('jsonOutput') }}?-youtube.comment">{{ url_for('jsonOutput', _external=True) }}?<b>-youtube.comment</b></a></blockquote>
 
-			<p>Use asterisks (*) as type/accounts wildcards.</p>
+			<p>Use asterisks (*) as type/account wildcards.</p>
 			<blockquote><a href="{{ url_for('jsonOutput') }}?github.*.hickerspace">{{ url_for('jsonOutput', _external=True) }}?<b>github.*.hickerspace</b></a></blockquote>
 			<blockquote><a href="{{ url_for('jsonOutput') }}?-twitter.*.hickernews">{{ url_for('jsonOutput', _external=True) }}?<b>-twitter.*.hickernews</b></a></blockquote>
 
