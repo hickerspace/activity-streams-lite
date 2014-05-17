@@ -69,7 +69,10 @@ class MailinglistHandler(base.BaseHandler):
 	def strToDatetime(self, dateStr, language='C'):
 		# convert string to datetime
 		locale.setlocale(locale.LC_TIME, language)
-		mailDate = datetime.strptime(dateStr.encode("utf-8"), "%a %b %d %H:%M:%S %Z %Y")
+		try:
+			mailDate = datetime.strptime(dateStr.encode("utf-8"), "%a %b %d %H:%M:%S %Z %Y")
+		except ValueError:
+			self.logError("Did you set the correct mailinglist language?")
 		locale.setlocale(locale.LC_TIME, '')
 		return mailDate
 
