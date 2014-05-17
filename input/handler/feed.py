@@ -10,16 +10,19 @@ FeedHandler parses feeds and inserts particular parts into the database.
 class FeedHandler(base.BaseHandler):
 	def __init__(self, dbConnection):
 		super(FeedHandler, self).__init__(dbConnection)
+		# sometimes feeds are slow, so be patient
 		socket.setdefaulttimeout(10)
 
 	def parse(self, url):
 		feed = feedparser.parse(url)
+		# feed parsing successfull?
 		if feed["bozo"]:
 			level = "Warning" if feed["entries"] else "Error"
 			self.log("Feed %s: %s (%s)" % (level, feed["bozo_exception"], url))
 		return feed
 
 	def stripHtml(self, htmlContent):
+		# get rid of HTML code
 		return re.sub('<[^<]+?>', '', htmlContent)
 
 	def github(self, organization, user, token):

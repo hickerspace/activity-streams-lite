@@ -17,11 +17,12 @@ class TwitterHandler(base.BaseHandler):
 
 	def twitter(self, **args):
 		try:
+			# call ALL the twitter methods
 			self.auth(**args)
 			self.do(self.timeline)
 			self.do(self.mentions)
 		except Exception as e:
-			# auth failed (other exceptions caught by self.do() )
+			# auth failed (other exceptions get caught by self.do() )
 			self.logError(e)
 
 	def auth(self, consumerkey, consumersecret, accesstoken, accesstokensecret):
@@ -31,12 +32,14 @@ class TwitterHandler(base.BaseHandler):
 		self.api = tweepy.API(auth)
 
 	def resolve(self, url, expanded):
+		# resolve redirections
 		h = httplib2.Http()
 		h.follow_redirects = False
 
 		try:
 			target = h.request(url, 'HEAD')[0]['location']
 		except (KeyError, httplib2.SSLHandshakeError, UnicodeError):
+			# meh, borken SSL or borken unicode, use short link
 			target = url
 
 		with open(self.expandedUrls, 'w') as f:
@@ -46,15 +49,17 @@ class TwitterHandler(base.BaseHandler):
 		return target
 
 	def expand(self, text, lastRun=False):
+		# expands short links, because nobody likes t.co
 		if not lastRun:
 			text = self.expand(text, True)
 
-		# http://daringfireball.net/2010/07/improved_regex_for_matching_urls
+		# try to find URLs - http://daringfireball.net/2010/07/improved_regex_for_matching_urls
 		urlMatch = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 		matches = urlMatch.findall(text)
 		matches = map(lambda match: match[0], matches)
 
 		try:
+			# load cached expanded URLs
 			with open(self.expandedUrls, 'r') as f:
 				expanded = json.load(f)
 		except IOError:
@@ -67,6 +72,9 @@ class TwitterHandler(base.BaseHandler):
 		return text
 
 	def insertStatus(self, status):
+		# insert Twitter statuses
+
+		# determine type of tweet
 		if not self.type_ or self.type_ != "mention":
 			if status.text[0] == "@":
 				self.type_ = "reply"
